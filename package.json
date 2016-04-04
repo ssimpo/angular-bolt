@@ -1,0 +1,36 @@
+{
+  "name": "angular-big-gallery",
+  "version": "0.0.1",
+  "description": "Gallery style menu written in angular with json config.",
+  "homepage": "http://aaron.whitebolt/team-dev/angular-allery-menu",
+  "bugs": {
+    "url": "http://aaron.whitebolt/team-dev/angular-big-gallery/issues"
+  },
+  "main": "src/index.js",
+  "author": "Whitebolt <hello@whitebolt.net>",
+  "private": false,
+  "contributors": [
+    {
+      "name": "Stephen Simpson",
+      "email": "stephen@whitebolt.net"
+    },
+    {
+      "name": "Kristjan Allikas",
+      "email": "kris@whitebolt.net"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@aaron.whitebolt:team-dev/angular-big-gallery"
+  },
+  "dependencies": {},
+  "devDependencies": {
+  },
+  "files": [
+  ],
+  "keywords": [
+    "angular",
+    "gallary"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md"
+}
