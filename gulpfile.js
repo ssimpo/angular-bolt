@@ -48,8 +48,8 @@ var watch = {
 	scss: ['./scss/*.scss'],
 	js: [
 		'./src/index.js',
-		'./src/menu/index.js',
-		'./src/menu/item/index.js'
+		'./src/gallery/index.js',
+		'./src/gallery/image/index.js'
 	],
 	admin: [
 		'./gulpfile.js'
