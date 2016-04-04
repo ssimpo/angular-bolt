@@ -1,3 +1,10 @@
-<div>
-
-</div>
+<ul class="angular-big-gallery">
+	<li ng-repeat="image in gallery.data">
+		<img
+			ng-src="{{image.src}}"
+			ng-class="{'wide-100':(image.width >= image.height), 'height-100':(image.width <= image.height)}"
+			ng-show="gallery.current === $index"
+			ng-click="gallery.next()"
+		>
+	</li>
+</ul>

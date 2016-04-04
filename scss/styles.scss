@@ -1,0 +1,21 @@
+.angular-big-gallery {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	list-style-image: none;
+
+	li {
+		display: inline;
+		margin: 0;
+		padding: 0;
+		border: 0;
+
+		img.width-100 {
+			width: 100%;
+		}
+
+		img.height-100 {
+			width: 100%;
+		}
+	}
+}
