@@ -3,34 +3,28 @@
 
 'use strict';
 
-var bowerData = require('./bower.json');
-var concat = require('gulp-concat');
-var embedTemplates = require('gulp-angular-embed-templates');
-var gulp = require('gulp');
-var jshint = require('gulp-jshint');
-var path = require('path');
-var rename = require("gulp-rename");
-var replace = require('gulp-replace');
-var sourcemaps = require('gulp-sourcemaps');
-var uglify = require('gulp-uglify');
+const bowerData = require('./bower.json');
+const concat = require('gulp-concat');
+const embedTemplates = require('gulp-angular-embed-templates');
+const gulp = require('gulp');
+const jshint = require('gulp-jshint');
+const path = require('path');
+const rename = require("gulp-rename");
+const replace = require('gulp-replace');
+const sourcemaps = require('gulp-sourcemaps');
+const uglify = require('gulp-uglify');
 
 
 function argumentsToArray(args){
-	var ary = [];
-
-	for(var n=0; n<args.length; n++){
-		ary.push(args[n]);
-	}
-
-	return ary;
+	return Array.prototype.slice.call(arguments);
 }
 
 function arrayExtend(){
-	var extended = [];
-	var items = {};
+	let extended = [];
+	let items = {};
 
-	argumentsToArray(arguments).forEach(function(arg){
-		(arg || []).forEach(function(item){
+	argumentsToArray(arguments).forEach(arg => {
+		(arg || []).forEach(item => {
 			if(!items.hasOwnProperty(item)){
 				items[item] = true;
 				extended.push(item);
@@ -42,7 +36,7 @@ function arrayExtend(){
 }
 
 
-var watch = {
+const watch = {
 	js: [
 		'./src/index.js',
 		'./src/ajax.js',
@@ -55,7 +49,7 @@ var watch = {
 	build: bowerData.main
 };
 
-gulp.task('minify', function() {
+gulp.task('minify', () => {
 	gulp.src(watch.js)
 		.pipe(replace(/(templateUrl: (?:"|')).*\/(.*?)("|')/g, '$1$2$3'))
 		.pipe(embedTemplates())
@@ -71,7 +65,7 @@ gulp.task('minify', function() {
 		});
 });
 
-gulp.task('lint', function() {
+gulp.task('lint', () => {
 	return gulp.src(arrayExtend(watch.js, watch.admin))
 		.pipe(jshint())
 		.pipe(jshint.reporter('default'));
