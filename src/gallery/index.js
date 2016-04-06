@@ -1,9 +1,9 @@
 angular.module("big-gallery").directive("bigGallery", [
 	"$window",
-	"$http",
+	"boltAjax",
 	"$timeout",
 
-	function ($window, $http, $timeout){
+	function ($window, $ajax, $timeout){
 		"use strict";
 
 		var scopeName = "gallery";
@@ -32,41 +32,10 @@ angular.module("big-gallery").directive("bigGallery", [
 
 				return watchers;
 			}, function(watchers) {
-				((watchers.action) ? getWordpressJson(controller) : getJson(controller)).then(function(data) {
+				((watchers.action) ? $ajax.getWordpress(controller) : $ajax.get(controller)).then(function(data) {
 					applyData(scope, parseData(data));
 				});
 			}, true);
-		}
-
-		function getJson(controller) {
-			return $http.get(controller.src, {}).then(function (response) {
-				if (response && response.data) {
-					return response.data;
-				}
-				throw "Incorrect data returned";
-			});
-		}
-
-		function getWordpressJson(controller) {
-			return $http({
-				method: "post",
-				url: controller.src,
-				data: {
-					action: controller.action,
-					nonce: controller.nonce
-				},
-				transformRequest: function(obj) {
-					var str = [];
-					for(var p in obj)
-						str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-					return str.join("&");
-				}
-			}).then(function (response) {
-				if (response && response.data) {
-					return response.data;
-				}
-				throw "Incorrect data returned";
-			});
 		}
 
 		function parseData(data){

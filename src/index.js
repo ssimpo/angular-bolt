@@ -1,3 +1,3 @@
 "use strict";
 
-angular.module("big-gallery", ["mm.foundation", "ngAnimate"]);
+angular.module("big-gallery", ["mm.foundation", "ngAnimate", "bolt"]);
