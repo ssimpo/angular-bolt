@@ -1,4 +1,4 @@
-angular.module("bolt", []).factory("boltAjax", [
+angular.module("bolt").factory("boltAjax", [
 	"$http",
 function($http) {
 	function get(options) {

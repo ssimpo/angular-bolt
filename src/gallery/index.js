@@ -1,86 +1,49 @@
 angular.module("big-gallery").directive("bigGallery", [
-	"$window",
 	"boltAjax",
+	"$bolt",
+	"boltObserver",
+	"boltWatcher",
 	"$timeout",
 
-	function ($window, $ajax, $timeout){
+	function ($ajax, $bolt, $observe, $watcher, $timeout){
 		"use strict";
 
 		var scopeName = "gallery";
 		var observeAttributes = ["src", "nonce", "action"];
 
 		function init(scope, element, attributes) {
-			initObservers(attributes, scope);
-			initWatchers(scope);
+			var options = {
+				attributes: attributes,
+				scope: scope,
+				scopeName: scopeName,
+				toObserve: observeAttributes
+			};
+
+			$observe.reflect(options);
+			$watcher.report($bolt.shallowCopy(options, {
+				callback: watchTrigger
+			}));
 		}
 
-		function initObservers(attributes, scope) {
-			angular.forEach(observeAttributes, function(attributeName) {
-				copyAttributeValueToController(attributeName, attributes, scope);
+		function watchTrigger(watchers, options) {
+			(
+				(watchers.action) ?
+					$ajax.getWordpress(scope[scopeName]) :
+					$ajax.get(options.scope[scopeName])
+			).then(function (data) {
+				$bolt.apply({
+					scope: options.scope,
+					attributeName: "data",
+					value: parseData(data),
+					scopeName: scopeName
+				});
 			});
-		}
-
-		function initWatchers(scope) {
-			var controller = scope[scopeName];
-
-			scope.$watch(function(){
-				var watchers = {};
-
-				angular.forEach(observeAttributes, function(attributeName) {
-					watchers[attributeName] = controller[attributeName];
-				});
-
-				return watchers;
-			}, function(watchers) {
-				((watchers.action) ? $ajax.getWordpress(controller) : $ajax.get(controller)).then(function(data) {
-					applyData(scope, parseData(data));
-				});
-			}, true);
 		}
 
 		function parseData(data){
 			return data;
 		}
 
-		function applyData(scope, data){
-			$timeout(function(){
-				scope.$apply(function(){
-					scope[scopeName].data = data;
-				});
-			});
-		}
-
-		function copyAttributeValueToController(attributeName, attributes, scope) {
-			var controller = scope[scopeName];
-
-			observe(attributes, attributeName, function (value){
-				try {
-					controller[attributeName] = scope.$eval(value, $window);
-					if ((value !== undefined) && (controller[attributeName] === undefined)) {
-						controller[attributeName] = value;
-					}
-				} catch (error) {
-					controller[attributeName] = value;
-				}
-			});
-		}
-
-		/**
-		 * @decription
-		 * Observe an attribute value and trigger a callback when the
-		 * value changes.
-		 *
-		 * @param {Array} iAttrs			The directive attributes array.
-		 * @param {string} attributeName 	The attribute name to observe.
-		 * @param {function} callback		Callback to fire.
-		 */
-		function observe(iAttrs, attributeName, callback){
-			iAttrs.$observe(attributeName, function (value, oldValue){
-				if(value !== oldValue){
-					callback(value, oldValue);
-				}
-			});
-		}
 
 		function controller(){
 			var vm = this; // jshint ignore:line
