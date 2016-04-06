@@ -18,6 +18,9 @@
     "url": "git@aaron.whitebolt:team-dev/angular-big-gallery.git"
   },
   "dependencies": {
+    "angular-animate": "~1.4.7",
+    "angular-foundation": "~0.8.0",
+    "foundation": "~5.5.3"
   },
   "devDependencies": {},
   "ignore": [

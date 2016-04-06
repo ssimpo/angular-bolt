@@ -64,7 +64,7 @@ gulp.task('serve', function(){
 			directoryListing: false,
 			open: true,
 			port: 8080,
-			fallback: "/demo/index.html"
+			fallback: "./demo/index.html"
 		}));
 });
 

@@ -129,7 +129,7 @@ angular.module("big-gallery").directive("bigGallery", [
 
 		return {
 			restrict: "EA",
-			templateUrl: "src/menu/index.html",
+			templateUrl: "src/gallery/index.html",
 			controllerAs: scopeName,
 			scope: true,
 
