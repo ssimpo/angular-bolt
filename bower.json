@@ -6,25 +6,26 @@
   "main": "index.js",
   "author": "Whitebolt <hello@whitebolt.net>",
   "private": false,
-  "contributors": [{
-    "name": "Stephen Simpson",
-    "email": "stephen@whitebolt.net"
-  }, {
-    "name": "Kristjan Allikas",
-    "email": "kris@whitebolt.net"
-  }],
+  "contributors": [
+    {
+      "name": "Stephen Simpson",
+      "email": "stephen@whitebolt.net"
+    },
+    {
+      "name": "Kristjan Allikas",
+      "email": "kris@whitebolt.net"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git@aaron.whitebolt:team-dev/angular-big-gallery.git"
   },
   "dependencies": {
-    "angular-animate": "~1.4.7",
-    "angular-foundation": "~0.8.0",
-    "foundation": "~5.5.3"
+    "foundation-sites": "^6.2.0",
+    "angular": "^1.5.3"
   },
   "devDependencies": {},
-  "ignore": [
-  ],
+  "ignore": [],
   "keywords": [
     "angular",
     "gallary"

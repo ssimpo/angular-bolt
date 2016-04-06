@@ -1,22 +1,27 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en-GB" class="no-js">
 <head>
+	<meta charset="utf-8" />
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 	<link rel="stylesheet" href="/styles/demo.css">
 
 	<title>Demo angular-big-gallery</title>
-
-	<script src="/demo/lib/modernizr/modernizr.js"></script>
-	<script src="/demo/lib/fastclick/lib/fastclick.js"></script>
-	<script src="/demo/lib/jquery/dist/jquery.min.js"></script>
-	<script src="/demo/lib/angular/angular.min.js"></script>
-	<script src="/demo/lib/angular-foundation/mm-foundation-tpls.min.js"></script>
-	<script src="/demo/lib/angular-animate/angular-animate.min.js"></script>
-
-	<script src="/src/ajax.js"></script>
-	<script src="/src/index.js"></script>
-	<script src="/src/gallery/index.js"></script>
 </head>
+
 <body ng-app="big-gallery">
 	<big-gallery src="/demo/demo.json"></big-gallery>
 </body>
+
+<!-- Libraries -->
+<script src="/demo/lib/jquery/dist/jquery.min.js"></script>
+<script src="/demo/lib/what-input/what-input.min.js"></script>
+<script src="/demo/lib/foundation-sites/dist/foundation.min.js"></script>
+<script src="/demo/lib/angular/angular.min.js"></script>
+
+<!-- Big Gallery -->
+<script src="/src/ajax.js"></script>
+<script src="/src/index.js"></script>
+<script src="/src/gallery/index.js"></script>
 </html>
