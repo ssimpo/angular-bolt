@@ -1,6 +1,7 @@
 angular.module("bolt").factory("boltWatcher", [
 
 function() {
+	"use strict";
 
 	function report(options) {
 		var controller = options.controller || options.scope[options.scopeName];

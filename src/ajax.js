@@ -1,6 +1,8 @@
 angular.module("bolt").factory("boltAjax", [
 	"$http",
 function($http) {
+	"use strict";
+
 	function get(options) {
 		return $http.get(options.src, {}).then(function (response) {
 			if (response && response.data) {
@@ -47,8 +49,8 @@ function($http) {
 	}
 
 	function getEncodedPostPart(key, value) {
-		return encodeURIComponent(key)
-			+ ((value !== undefined)? "=" + encodeURIComponent(value) : "");
+		return encodeURIComponent(key) +
+			((value !== undefined)? "=" + encodeURIComponent(value) : "");
 	}
 
 	return {

@@ -2,6 +2,7 @@ angular.module("bolt").factory("boltObserver", [
 	"$bolt",
 	"$window",
 function($bolt, $window) {
+	"use strict";
 
 	function reflect(options) {
 		angular.forEach(options.toObserve, function(attributeName) {

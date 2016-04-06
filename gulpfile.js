@@ -11,10 +11,8 @@ var jshint = require('gulp-jshint');
 var path = require('path');
 var rename = require("gulp-rename");
 var replace = require('gulp-replace');
-var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
-var webserver = require('gulp-webserver');
 
 
 function argumentsToArray(args){
@@ -45,34 +43,17 @@ function arrayExtend(){
 
 
 var watch = {
-	scss: ['./scss/*.scss'],
 	js: [
 		'./src/index.js',
-		'./src/gallery/index.js',
-		'./src/gallery/image/index.js'
+		'./src/ajax.js',
+		'./src/observer.js',
+		'./src/watcher.js'
 	],
 	admin: [
 		'./gulpfile.js'
 	],
 	build: bowerData.main
 };
-
-gulp.task('serve', function(){
-	gulp.src('./')
-		.pipe(webserver({
-			livereload: false,
-			directoryListing: false,
-			open: true,
-			port: 8080,
-			fallback: "./demo/index.html"
-		}));
-});
-
-gulp.task('sass', function(){
-	gulp.src(watch.scss)
-		.pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-		.pipe(gulp.dest('./styles'));
-});
 
 gulp.task('minify', function() {
 	gulp.src(watch.js)
