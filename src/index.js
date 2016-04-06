@@ -1,14 +1,14 @@
-angular.module("bolt", []).factory("$bolt", [
-	"$timeout",
-function($timeout) {
+(function() {
 	"use strict";
+
+	angular.module("bolt", []);
 
 	if (typeof Object.assign != 'function') {
 		(function () {
 			Object.assign = function (target) {
 				'use strict';
 				if (target === undefined || target === null) {
-					throw new TypeError('Cannot convert undefined or null to object');
+					throw new TypeError("Cannot convert undefined or null to object");
 				}
 
 				var output = Object(target);
@@ -27,31 +27,9 @@ function($timeout) {
 		})();
 	}
 
-	function shallowCopy(obj) {
-		var args = Array.prototype.slice.call(arguments);
-		args.unshift({});
-		var copy = Object.assign.apply(Object, args);
-
-		angular.forEach(copy, function(value, key) {
-			if (value === undefined) {
-				delete copy[key];
-			}
+	angular.element(document).ready(function() {
+		angular.forEach(angular.element.find("[wb-app]"), function(node) {
+			angular.bootstrap(node, [angular.element(node).attr("wb-app")]);
 		});
-
-		return copy;
-	}
-
-	function apply(options){
-		var controller = options.controller || options.scope[options.scopeName];
-		$timeout(function(){
-			options.scope.$apply(function(){
-				controller[options.attributeName] = options.value;
-			});
-		});
-	}
-
-	return {
-		"apply": apply,
-		"shallowCopy": shallowCopy
-	};
-}]);
+	});
+})();
