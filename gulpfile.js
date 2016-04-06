@@ -16,7 +16,7 @@ const uglify = require('gulp-uglify');
 
 
 function argumentsToArray(args){
-	return Array.prototype.slice.call(arguments);
+	return Array.prototype.slice.call(args);
 }
 
 function arrayExtend(){
