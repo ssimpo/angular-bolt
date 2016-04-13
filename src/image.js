@@ -56,6 +56,9 @@ angular.module("bolt").factory("boltImage", [
 		}
 
 		function calcPosition(image, width, height) {
+			width = width || image.width;
+			height = height || image.height;
+
 			var aspect = width / height;
 			var imageAspect = image.width / image.height;
 			var position = {
