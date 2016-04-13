@@ -15,6 +15,13 @@ angular.module("bolt").factory("boltImage", [
 			});
 		}
 
+		function cloneImageData(data) {
+			return new ImageData(
+				new Uint8ClampedArray(data.data),
+				data.width, data.height
+			)
+		}
+
 		function getBlock(data, position) {
 			if ((position.x >= data.width) || (position.y >= data.height)) {
 				return undefined
@@ -144,6 +151,7 @@ angular.module("bolt").factory("boltImage", [
 		}
 
 		return {
+			cloneImageData: cloneImageData,
 			getImageData: getImageData,
 			getBlock: getBlock,
 			getPixel: getPixel,
