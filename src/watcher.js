@@ -7,15 +7,18 @@ function() {
 		var controller = options.controller || options.scope[options.scopeName];
 		var toWatch = options.toWatch || options.toObserve;
 
-		var unwatch = options.scope.$watch(function(){
+		var currentWatcher = function(){
 			return getWatcherObject(toWatch, controller);
-		}, function(watchers) {
-			options.callback(watchers, options);
-		}, true);
-
-		unwatch.trigger = function() {
-			options.callback(getWatcherObject(toWatch, controller), options);
 		};
+
+		var trigger = function(watchers) {
+			watchers = watcher || currentWatcher();
+			options.callback(watchers, options);
+		};
+
+		var unwatch = options.scope.$watch(currentWatcher, trigger, true);
+
+		unwatch.trigger = trigger;
 
 		return unwatch;
 	}
