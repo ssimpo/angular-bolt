@@ -62,8 +62,20 @@ angular.module("bolt").factory("boltImage", [
 				r: data.data[pos++],
 				g: data.data[pos++],
 				b: data.data[pos++],
-				a: data.data[pos]
+				a: data.data[pos],
+				x: x,
+				y: y
 			};
+		}
+
+		function setPixel(data, pixel) {
+			var pos = (((data.width * pixel.y) + pixel.x) * 4);
+			data.data[pos++] = pixel.r;
+			data.data[pos++] = pixel.g;
+			data.data[pos++] = pixel.b;
+			data.data[pos] = pixel.a;
+
+			return pixel;
 		}
 
 		function getPixelData(imageNode, position) {
@@ -134,6 +146,7 @@ angular.module("bolt").factory("boltImage", [
 		return {
 			getImageData: getImageData,
 			getBlock: getBlock,
-			getPixel: getPixel
+			getPixel: getPixel,
+			setPixel: setPixel
 		};
 	}]);
