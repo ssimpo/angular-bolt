@@ -26,8 +26,32 @@ function($timeout) {
 		});
 	}
 
+	function chunk(ary, chunkSize) {
+		return ary.map(function(item, index){
+			return index % chunkSize === 0 ? ary.slice(index, index + chunkSize) : null;
+		}).filter(function(item){
+			return item;
+		});
+	}
+
+	function shuffle(ary) {
+		var currentIndex = ary.length, temporaryValue, randomIndex;
+
+		while (0 !== currentIndex) {
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex -= 1;
+			temporaryValue = ary[currentIndex];
+			ary[currentIndex] = ary[randomIndex];
+			ary[randomIndex] = temporaryValue;
+		}
+
+		return ary;
+	}
+
 	return {
 		"apply": apply,
-		"shallowCopy": shallowCopy
+		"chunk": chunk,
+		"shallowCopy": shallowCopy,
+		"shuffle": shuffle
 	};
 }]);
