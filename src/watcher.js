@@ -12,7 +12,7 @@ function() {
 		};
 
 		var trigger = function(watchers) {
-			watchers = watcher || currentWatcher();
+			watchers = watchers || currentWatcher();
 			options.callback(watchers, options);
 		};
 

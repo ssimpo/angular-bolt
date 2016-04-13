@@ -5,12 +5,65 @@ angular.module("bolt").factory("boltImage", [
 	function($document, $q) {
 		"use strict";
 
+		var colourSequence = ["r", "g", "b", "a"];
+
 		function getImageData(src, width, height) {
 			// @todo	Deal with missing images - return undefined?
 			return loadImage(src).then(function(imageNode) {
 				var position = calcPosition(imageNode, width, height);
 				return getPixelData(imageNode, position);
 			});
+		}
+
+		function getBlock(data, position) {
+			if ((position.x >= data.width) || (position.y >= data.height)) {
+				return undefined
+			}
+			position = correctPosition(data, position);
+
+			var block = new ImageData(
+				new Uint8ClampedArray(position.width * position.height * 4),
+				position.width, position.height
+			);
+			block.left = position.x + (position.left || 0);
+			block.top = position.y + (position.top || 0);
+			var count = 0;
+
+			for (var y = position.y; y < (position.height + position.y); y++) {
+				for (var x = position.x; x < (position.width + position.x); x++) {
+					var pixel = getPixel(data, x, y);
+
+					colourSequence.forEach(function(colour) {
+						block.data[count++] = pixel[colour]
+					});
+				}
+			}
+
+			//console.log(position.x, position.y, position.width, position.height, block.data.length);
+
+			return block;
+		}
+
+		function correctPosition(data, position) {
+			if ((position.x + position.width) >= data.width) {
+				position.width = data.width - position.x;
+			}
+			if ((position.y + position.height) >= data.height) {
+				position.height = data.height - position.y;
+			}
+
+			return position;
+		}
+
+		function getPixel(data, x, y) {
+			var pos = (((data.width * y) + x) * 4);
+
+			return {
+				r: data.data[pos++],
+				g: data.data[pos++],
+				b: data.data[pos++],
+				a: data.data[pos]
+			};
 		}
 
 		function getPixelData(imageNode, position) {
@@ -79,6 +132,8 @@ angular.module("bolt").factory("boltImage", [
 		}
 
 		return {
-			getImageData: getImageData
+			getImageData: getImageData,
+			getBlock: getBlock,
+			getPixel: getPixel
 		};
 	}]);
