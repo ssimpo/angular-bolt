@@ -6,6 +6,7 @@ angular.module("bolt").factory("boltImage", [
 		"use strict";
 
 		function getImageData(src, width, height) {
+			// @todo	Deal with missing images - return undefined?
 			return loadImage(src).then(function(imageNode) {
 				var position = calcPosition(imageNode, width, height);
 				return getPixelData(imageNode, position);
