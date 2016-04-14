@@ -23,6 +23,16 @@ angular.module("bolt").factory("boltImageAnimations", [
 			});
 		}
 
+		function animate(data, options) {
+			var type = (options.animationType || "").toLowerCase();
+			if (type === "blocks") {
+				return createBlockAnimation(data, options);
+			}
+			if (type === "dissolve") {
+				return createDisolveAnimation(data, options);
+			}
+		}
+
 		function createAnimationRunner(options, runner) {
 			runner.timer = $timeout(function(){
 				requestAnimationFrame(function() {
@@ -62,10 +72,23 @@ angular.module("bolt").factory("boltImageAnimations", [
 			return points;
 		}
 
+		function getFreshAnimationArray(options) {
+			var animations;
+
+			if (options.animations && angular.isArray(options.animations)) {
+				options.animations.splice(0, options.animations.length);
+				animations = options.animations;
+			} else {
+				animations = [];
+			}
+
+			return animations;
+		}
+
 		function createDisolveAnimation(data, options) {
+			var animations = getFreshAnimationArray(options);
 			var points = $bolt.shuffle(getArrayOfAllDataPoints(data));
 			var steps = parseInt(points.length / options.steps, 10);
-			var animations = [];
 			var frameData = [];
 			frameData[-1] = options.canvas.getImageData(0, 0, options.width, options.height);
 
@@ -94,10 +117,9 @@ angular.module("bolt").factory("boltImageAnimations", [
 		}
 
 		function createBlockAnimation(data, options) {
-			var animations = [];
+			var animations = getFreshAnimationArray(options);
 			var sizes = getBlockSizes(data, options.steps, 10);
 			var maxSize = sizes[sizes.length -1];
-			var count = 0;
 
 			sizes.forEach(function(size) {
 				var blocks = [];
@@ -139,7 +161,6 @@ angular.module("bolt").factory("boltImageAnimations", [
 
 		return {
 			"run": run,
-			"createDisolveAnimation": createDisolveAnimation,
-			"createBlockAnimation": createBlockAnimation
+			"animate": animate
 		};
 	}]);
