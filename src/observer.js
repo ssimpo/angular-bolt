@@ -14,16 +14,17 @@ function($bolt, $window) {
 
 	function copyAttributeValueToController(options) {
 		var controller = options.controller || options.scope[options.scopeName];
-		var attributeName = options.attributeName;
+		var attributeName = angular.isArray(options.attributeName) ? options.attributeName[0] : options.attributeName;
+		var controllerName = angular.isArray(options.attributeName) ? options.attributeName[1] : options.attributeName;
 
-		observe(options.attributes, attributeName, function (value){
+		observe(options.attributes, attributeName, function (value) {
 			try {
-				controller[attributeName] = options.scope.$eval(value, $window);
-				if ((value !== undefined) && (controller[attributeName] === undefined)) {
-					controller[attributeName] = value;
+				controller[controllerName] = options.scope.$eval(value, $window);
+				if ((value !== undefined) && (controller[controllerName] === undefined)) {
+					controller[controllerName] = value;
 				}
 			} catch (error) {
-				controller[attributeName] = value;
+				controller[controllerName] = value;
 			}
 		});
 	}
@@ -37,7 +38,7 @@ function($bolt, $window) {
 	 * @param {string} attributeName 	The attribute name to observe.
 	 * @param {function} callback		Callback to fire.
 	 */
-	function observe(attributes, attributeName, callback){
+	function observe(attributes, attributeName, callback) {
 		attributes.$observe(attributeName, function (value, oldValue){
 			if(value !== oldValue){
 				callback(value, oldValue);
