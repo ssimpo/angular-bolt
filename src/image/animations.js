@@ -29,7 +29,7 @@ angular.module("bolt").factory("boltImageAnimations", [
 				return createBlockAnimation(data, options);
 			}
 			if (type === "dissolve") {
-				return createDisolveAnimation(data, options);
+				return createDissolveAnimation(data, options);
 			}
 		}
 
@@ -85,7 +85,7 @@ angular.module("bolt").factory("boltImageAnimations", [
 			return animations;
 		}
 
-		function createDisolveAnimation(data, options) {
+		function createDissolveAnimation(data, options) {
 			var animations = getFreshAnimationArray(options);
 			var points = $bolt.shuffle(getArrayOfAllDataPoints(data));
 			var steps = parseInt(points.length / options.steps, 10);
