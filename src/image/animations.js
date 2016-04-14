@@ -1,21 +1,43 @@
 angular.module("bolt").factory("boltImageAnimations", [
 	"$bolt",
 	"boltImage",
+	"$rootScope",
 	"$timeout",
 
-	function($bolt, $image, $timeout) {
+	function($bolt, $image, $scope, $timeout) {
 
-		function run(controller) {
-			$timeout(function(){
+		function run(options) {
+			var runner = {
+				framerate: options.framerate
+			};
+
+			createAnimationRunner(options, runner);
+			$scope.$watch(function() {
+				return options.framerate
+			}, function(framerate) {
+				if (framerate !== runner.framerate) {
+					runner.framerate = framerate;
+					runner.stop();
+					createAnimationRunner(options, runner);
+				}
+			});
+		}
+
+		function createAnimationRunner(options, runner) {
+			runner.timer = $timeout(function(){
 				requestAnimationFrame(function() {
-					if (controller && controller.animations && controller.animations.length) {
-						var animation = controller.animations.shift();
+					if (options && options.animations && options.animations.length) {
+						var animation = options.animations.shift();
 						animation();
 						animation = undefined;
 					}
-					run(controller);
+					createAnimationRunner(options, runner);
 				});
-			}, 1000 / (controller.framerate || 0));
+			}, 1000 / (options.framerate || 0));
+
+			runner.stop = function() {
+				$timeout.cancel(runner.timer);
+			};
 		}
 
 		function getBlockSizes(data, steps, blockCols) {
@@ -40,12 +62,12 @@ angular.module("bolt").factory("boltImageAnimations", [
 			return points;
 		}
 
-		function createDisolveAnimation(data, controller) {
+		function createDisolveAnimation(data, options) {
 			var points = $bolt.shuffle(getArrayOfAllDataPoints(data));
-			var steps = parseInt(points.length / controller.steps, 10);
+			var steps = parseInt(points.length / options.steps, 10);
 			var animations = [];
 			var frameData = [];
-			frameData[-1] = controller.canvas.getImageData(0, 0, controller.width, controller.height);
+			frameData[-1] = options.canvas.getImageData(0, 0, options.width, options.height);
 
 			$bolt.chunk(points, steps).forEach(function(groups, index) {
 				frameData.push($image.cloneImageData(frameData[index-1]));
@@ -58,7 +80,7 @@ angular.module("bolt").factory("boltImageAnimations", [
 				});
 
 				animations.push(function(){
-					controller.canvas.putImageData(frameData[index], 0, 0);
+					options.canvas.putImageData(frameData[index], 0, 0);
 					delete frameData[index-1];
 				});
 			});
@@ -71,16 +93,16 @@ angular.module("bolt").factory("boltImageAnimations", [
 			return animations;
 		}
 
-		function createBlockAnimation(data, controller) {
+		function createBlockAnimation(data, options) {
 			var animations = [];
-			var sizes = getBlockSizes(data, controller.steps, 10);
+			var sizes = getBlockSizes(data, options.steps, 10);
 			var maxSize = sizes[sizes.length -1];
 			var count = 0;
 
 			sizes.forEach(function(size) {
 				var blocks = [];
-				for (var x=0; x < controller.width; x+=maxSize) {
-					for (var y = 0; y < controller.height; y+=maxSize) {
+				for (var x=0; x < options.width; x+=maxSize) {
+					for (var y = 0; y < options.height; y+=maxSize) {
 						var block = $image.getBlock(data, {
 							x: x, y: y,
 							width: size, height: size,
@@ -96,7 +118,7 @@ angular.module("bolt").factory("boltImageAnimations", [
 
 				var cAnimation = blocks.map(function(block) {
 					return function() {
-						controller.canvas.putImageData(
+						options.canvas.putImageData(
 							block,
 							block.left, block.top,
 							0, 0,
