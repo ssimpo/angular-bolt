@@ -7,7 +7,7 @@ function($bolt, $window) {
 	function reflect(options) {
 		angular.forEach(options.toObserve, function(attributeName) {
 			var copyOptions = $bolt.shallowCopy(options);
-			options.attributeName = attributeName;
+			copyOptions.attributeName = attributeName;
 			copyAttributeValueToController(copyOptions);
 		});
 	}
