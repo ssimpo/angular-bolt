@@ -18,7 +18,6 @@ angular.module("bolt").factory("boltImageAnimations", [
 				if (framerate !== runner.framerate) {
 					runner.framerate = framerate;
 					runner.stop();
-					console.log("RERUN");
 					createAnimationRunner(options, runner);
 				}
 			});
