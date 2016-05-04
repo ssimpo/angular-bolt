@@ -31,6 +31,9 @@ angular.module("bolt").factory("boltImageAnimations", [
 			if (type === "dissolve") {
 				return createDissolveAnimation(data, options);
 			}
+			if (type === "fade") {
+				return createFadeAnimation(data, options);
+			}
 		}
 
 		function createAnimationRunner(options, runner) {
@@ -111,6 +114,47 @@ angular.module("bolt").factory("boltImageAnimations", [
 			animations.push(function() {
 				delete frameData[steps -1];
 				frameData = undefined;
+			});
+
+			return animations;
+		}
+
+		function createFadeAnimation(toImage, options) {
+			var animations = getFreshAnimationArray(options);
+			var fromImage = options.canvas.getImageData(0, 0, options.width, options.height);
+			var pixelsTo = getArrayOfAllDataPoints(toImage);
+
+			$bolt.fill(1, options.steps).forEach(function(step) {
+				var middleImage = $image.cloneImageData(fromImage);
+				middleImage.top = toImage.top;
+				middleImage.left = toImage.left;
+				var factor = ((1 / options.steps) * step);
+				var compl = 1 - factor;
+
+				pixelsTo.forEach(function(point) {
+					var pixelTo = $image.getPixel(toImage, point.x, point.y);
+					var middlePixel = $image.getPixel(toImage, point.x, point.y);
+					var pixelFrom = $image.getPixel(
+						fromImage,
+						point.x + (toImage.left || 0),
+						point.y + (toImage.top || 0)
+					);
+
+					middlePixel.r = pixelTo.r * factor + pixelFrom.r * compl;
+					middlePixel.g = pixelTo.g * factor + pixelFrom.r * compl;
+					middlePixel.b = pixelTo.b * factor + pixelFrom.g * compl;
+					middlePixel.a = pixelTo.a * factor + pixelFrom.a * compl;
+					$image.setPixel(middleImage, middlePixel);
+				});
+
+				animations.push(function(){
+					options.canvas.putImageData(middleImage, 0, 0);
+					delete middleImage;
+				});
+			});
+
+			animations.push(function() {
+				delete fromImage;
 			});
 
 			return animations;
