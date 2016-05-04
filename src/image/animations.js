@@ -122,34 +122,31 @@ angular.module("bolt").factory("boltImageAnimations", [
 		function createFadeAnimation(toImage, options) {
 			var animations = getFreshAnimationArray(options);
 			var fromImage = options.canvas.getImageData(0, 0, options.width, options.height);
-			var pixelsTo = getArrayOfAllDataPoints(toImage);
+			var left = (toImage.left || 0);
+			var top = (toImage.top || 0);
+			var pixels = getArrayOfAllDataPoints(toImage).map(function(coords) {
+				return {
+					from: $image.getPixel(fromImage, coords.x + left, coords.y + top),
+					to: $image.getPixel(toImage, coords.x, coords.y)
+				};
+			});
 
 			$bolt.fill(1, options.steps).forEach(function(step) {
 				var middleImage = $image.cloneImageData(fromImage);
 				var factor = ((1 / options.steps) * step);
 				var compl = 1 - factor;
 
-				pixelsTo.forEach(function(point) {
-					var pixelTo = $image.getPixel(toImage, point.x, point.y, "hsla");
-					var middlePixel = $image.getPixel(toImage, point.x, point.y, "hsla");
-					var pixelFrom = $image.getPixel(
-						fromImage,
-						point.x + (toImage.left || 0),
-						point.y + (toImage.top || 0),
-						"hsla"
-					);
-
-					middlePixel.h = pixelTo.h * factor + pixelFrom.h * compl;
-					middlePixel.s = pixelTo.s * factor + pixelFrom.s * compl;
-					middlePixel.l = pixelTo.l * factor + pixelFrom.l * compl;
-
-					//middlePixel.r = pixelTo.r * factor + pixelFrom.r * compl;
-					//middlePixel.g = pixelTo.g * factor + pixelFrom.r * compl;
-					//middlePixel.b = pixelTo.b * factor + pixelFrom.g * compl;
-
-					middlePixel.x += (toImage.left || 0);
-					middlePixel.y += (toImage.top || 0);
-					$image.setPixel(middleImage, middlePixel);
+				pixels.forEach(function(pixel) {
+					$image.setPixel(middleImage, {
+						r: pixel.to.r * factor + pixel.from.r * compl,
+						g: pixel.to.g * factor + pixel.from.g * compl,
+						b: pixel.to.b * factor + pixel.from.b * compl,
+						a: pixel.to.a * factor + pixel.from.a * compl,
+						x: pixel.to.x,
+						y: pixel.to.y,
+						left: left,
+						top: top
+					});
 				});
 
 				animations.push(function(){
@@ -158,9 +155,8 @@ angular.module("bolt").factory("boltImageAnimations", [
 				});
 			});
 
-			animations.push(function() {
-				delete fromImage;
-			});
+			delete fromImage;
+			delete pixels;
 
 			return animations;
 		}

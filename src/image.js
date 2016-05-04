@@ -161,7 +161,7 @@ angular.module("bolt").factory("boltImage", [
 		}
 
 		function setPixel(data, pixel) {
-			var pos = (((data.width * pixel.y) + pixel.x) * 4);
+			var pos = (((data.width * (pixel.y + (pixel.top || 0))) + (pixel.x + (pixel.left || 0))) * 4);
 
 			if (!pixel.hasOwnProperty("r") && !pixel.hasOwnProperty("g") && !pixel.hasOwnProperty("b")) {
 				if (pixel.hasOwnProperty("h") && pixel.hasOwnProperty("s") && pixel.hasOwnProperty("l")) {
