@@ -101,7 +101,7 @@ angular.module("bolt").factory("boltImageAnimations", [
 				groups.forEach(function(point) {
 					var pixel = $image.getPixel(data, point.x, point.y);
 					pixel.x += (data.left || 0);
-					pixel.y += (data.top || 0)
+					pixel.y += (data.top || 0);
 					$image.setPixel(frameData[index], pixel);
 				});
 
@@ -126,24 +126,29 @@ angular.module("bolt").factory("boltImageAnimations", [
 
 			$bolt.fill(1, options.steps).forEach(function(step) {
 				var middleImage = $image.cloneImageData(fromImage);
-				middleImage.top = toImage.top;
-				middleImage.left = toImage.left;
 				var factor = ((1 / options.steps) * step);
 				var compl = 1 - factor;
 
 				pixelsTo.forEach(function(point) {
-					var pixelTo = $image.getPixel(toImage, point.x, point.y);
-					var middlePixel = $image.getPixel(toImage, point.x, point.y);
+					var pixelTo = $image.getPixel(toImage, point.x, point.y, "hsla");
+					var middlePixel = $image.getPixel(toImage, point.x, point.y, "hsla");
 					var pixelFrom = $image.getPixel(
 						fromImage,
 						point.x + (toImage.left || 0),
-						point.y + (toImage.top || 0)
+						point.y + (toImage.top || 0),
+						"hsla"
 					);
 
-					middlePixel.r = pixelTo.r * factor + pixelFrom.r * compl;
-					middlePixel.g = pixelTo.g * factor + pixelFrom.r * compl;
-					middlePixel.b = pixelTo.b * factor + pixelFrom.g * compl;
-					middlePixel.a = pixelTo.a * factor + pixelFrom.a * compl;
+					middlePixel.h = pixelTo.h * factor + pixelFrom.h * compl;
+					middlePixel.s = pixelTo.s * factor + pixelFrom.s * compl;
+					middlePixel.l = pixelTo.l * factor + pixelFrom.l * compl;
+
+					//middlePixel.r = pixelTo.r * factor + pixelFrom.r * compl;
+					//middlePixel.g = pixelTo.g * factor + pixelFrom.r * compl;
+					//middlePixel.b = pixelTo.b * factor + pixelFrom.g * compl;
+
+					middlePixel.x += (toImage.left || 0);
+					middlePixel.y += (toImage.top || 0);
 					$image.setPixel(middleImage, middlePixel);
 				});
 

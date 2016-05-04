@@ -46,8 +46,6 @@ angular.module("bolt").factory("boltImage", [
 				}
 			}
 
-			//console.log(position.x, position.y, position.width, position.height, block.data.length);
-
 			return block;
 		}
 
@@ -62,10 +60,86 @@ angular.module("bolt").factory("boltImage", [
 			return position;
 		}
 
-		function getPixel(data, x, y) {
-			var pos = (((data.width * y) + x) * 4);
+		function rgbaToHsla(pixel){
+			var r = pixel.r / 255;
+			var g = pixel.g / 255;
+			var b = pixel.b / 255;
+			var a = (pixel.a | 255) / 255;
 
-			return {
+			var max = Math.max(r, g, b)
+			var min = Math.min(r, g, b);
+
+			var hsla = {
+				h: 0,
+				s: 0,
+				l: (max + min) / 2,
+				a: a,
+				x: pixel.x,
+				y: pixel.y
+			};
+
+			if (max == min) {
+				hsla.h = hsla.s = 0; // achromatic
+			} else {
+				var diff = max - min;
+
+				hsla.s = ((hsla.l > 0.5) ? diff / (2 - max - min) : diff / (max + min));
+				switch(max){
+					case r: hsla.h = (g - b) / diff + ((g < b) ? 6 : 0); break;
+					case g: hsla.h = (b - r) / diff + 2; break;
+					case b: hsla.h = (r - g) / diff + 4; break;
+				}
+				hsla.h /= 6;
+			}
+
+			return hsla;
+		}
+
+		function hue2rgb(p, q, t){
+			if(t < 0) t += 1;
+			if(t > 1) t -= 1;
+			if(t < 1/6) return p + (q - p) * 6 * t;
+			if(t < 1/2) return q;
+			if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+			return p;
+		}
+
+		function hslaToRgba(pixel) {
+			var rgba = {
+				r: 0,
+				g: 0,
+				b: 0,
+				a: Math.round((pixel.a || 1) * 255),
+				x: pixel.x,
+				y: pixel.y
+			};
+
+			if (pixel.s == 0) {
+				rgba.r = rgba.g = rgba.b = pixel.l; // achromatic
+			} else {
+				var q = (
+					(pixel.l < 0.5) ?
+						pixel.l * (1 + pixel.s) :
+						pixel.l + pixel.s - pixel.l * pixel.s
+				);
+				var p = 2 * pixel.l - q;
+				rgba.r = hue2rgb(p, q, pixel.h + 1/3);
+				rgba.g = hue2rgb(p, q, pixel.h);
+				rgba.b = hue2rgb(p, q, pixel.h - 1/3);
+			}
+
+			rgba.r = Math.round(rgba.r * 255);
+			rgba.g = Math.round(rgba.g * 255);
+			rgba.b = Math.round(rgba.b * 255);
+
+			return rgba;
+		}
+
+		function getPixel(data, x, y, colourSpace) {
+			colourSpace = (colourSpace || "").toLowerCase();
+
+			var pos = (((data.width * y) + x) * 4);
+			var pixel = {
 				r: data.data[pos++],
 				g: data.data[pos++],
 				b: data.data[pos++],
@@ -73,10 +147,28 @@ angular.module("bolt").factory("boltImage", [
 				x: x,
 				y: y
 			};
+
+			if (colourSpace === "rgb") {
+				delete pixel.a;
+			} else if ((colourSpace === "hsl") || (colourSpace === "hsla")) {
+				pixel = rgbaToHsla(pixel);
+				if (colourSpace === "hsl") {
+					delete pixel.a;
+				}
+			}
+
+			return pixel;
 		}
 
 		function setPixel(data, pixel) {
 			var pos = (((data.width * pixel.y) + pixel.x) * 4);
+
+			if (!pixel.hasOwnProperty("r") && !pixel.hasOwnProperty("g") && !pixel.hasOwnProperty("b")) {
+				if (pixel.hasOwnProperty("h") && pixel.hasOwnProperty("s") && pixel.hasOwnProperty("l")) {
+					pixel = hslaToRgba(pixel);
+				}
+			}
+
 			data.data[pos++] = pixel.r;
 			data.data[pos++] = pixel.g;
 			data.data[pos++] = pixel.b;
