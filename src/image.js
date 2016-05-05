@@ -12,9 +12,15 @@ angular.module("bolt").factory("boltImage", [
 		function getImageData(src, width, height) {
 			// @todo	Deal with missing images - return undefined?
 
-			return loadImage2(src).then(function(data) {
-				return jpgDataToImageData(data, width, height);
+			return loadImage(src).then(function(node) {
+				var position = calcPosition(node, width, height);
+				var iData = getPixelData(node, position);
+				return iData;
 			});
+
+			/*return loadImage2(src).then(function(data) {
+				return jpgDataToImageData(data, width, height);
+			});*/
 		}
 
 		function jpgDataToImageData(jpgData, width, height) {
