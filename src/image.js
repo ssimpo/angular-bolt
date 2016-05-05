@@ -1,17 +1,25 @@
 angular.module("bolt").factory("boltImage", [
 	"$document",
 	"$q",
+	"$http",
+	"boltImageJpg",
 
-	function($document, $q) {
+	function($document, $q, $http, $jpg) {
 		"use strict";
 
 		var colourSequence = ["r", "g", "b", "a"];
 
 		function getImageData(src, width, height) {
 			// @todo	Deal with missing images - return undefined?
-			return loadImage(src).then(function(imageNode) {
-				var position = calcPosition(imageNode, width, height);
-				return getPixelData(imageNode, position);
+
+			return loadImage2(src).then(function(data) {
+				var parser = new $jpg.JpegDecoder();
+				parser.parse(data);
+				var position = calcPosition(parser, width, height);
+				var iData = new ImageData(position.width, position.height);
+				iData.left = position.left;
+				iData.top = position.top;
+				return copyToImageData(parser, iData);
 			});
 		}
 
@@ -194,15 +202,83 @@ angular.module("bolt").factory("boltImage", [
 			return data;
 		}
 
+		function loadImageFromBase64DataUrl(src) {
+			return $q(function(resolve, reject) {
+				var offset = src.indexOf("base64,") + 7;
+				var data = atob(src.substring(offset));
+				var arr = new Uint8Array(data.length);
+				for (var i = data.length - 1; i >= 0; i--) {
+					arr[i] = data.charCodeAt(i);
+				}
+				resolve(arr.buffer);
+			});
+		}
+
+		function loadImageFromBinaryHttpRequest(src) {
+			return $http.get(src, {
+				responseType: "arraybuffer"
+			}).then(function(response) {
+				return new Uint8Array(response.data);
+			});
+		}
+
+		function loadImage2(src) {
+			return (src.indexOf("data:") === 0) ?
+				loadImageFromBase64DataUrl(src) :
+				loadImageFromBinaryHttpRequest(src);
+		}
+
 		function loadImage(src) {
 			var imageNode = new Image();
 			imageNode.src = src;
+
+			loadImage2(src).then(function(data) {
+				console.log(data);
+				var parser = new $jpg.JpegDecoder();
+				parser.parse(data);
+				console.log(parser);
+			}, function(error) {
+				console.error(error);
+			});
 
 			return $q(function(resolve, reject) {
 				angular.element(imageNode).on("load", function() {
 					resolve(imageNode);
 				});
 			});
+		}
+
+		function copyToImageData(parser, imageData) {
+			if (parser.numComponents === 2 || parser.numComponents > 4) {
+				throw new Error('Unsupported amount of components');
+			}
+
+			var width = imageData.width, height = imageData.height;
+			var imageDataBytes = width * height * 4;
+			var imageDataArray = imageData.data;
+
+			var i, j;
+			if (parser.numComponents === 1) {
+				var values = parser.getData(width, height, false);
+				for (i = 0, j = 0; i < imageDataBytes;) {
+					var value = values[j++];
+					imageDataArray[i++] = value;
+					imageDataArray[i++] = value;
+					imageDataArray[i++] = value;
+					imageDataArray[i++] = 255;
+				}
+				return;
+			}
+
+			var rgb = parser.getData(width, height, true);
+			for (i = 0, j = 0; i < imageDataBytes;) {
+				imageDataArray[i++] = rgb[j++];
+				imageDataArray[i++] = rgb[j++];
+				imageDataArray[i++] = rgb[j++];
+				imageDataArray[i++] = 255;
+			}
+
+			return imageData;
 		}
 
 		function createCanvasForImage(imageNode) {

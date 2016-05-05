@@ -44,7 +44,8 @@ const watch = {
 		'./src/observer.js',
 		'./src/watcher.js',
 		'./src/image.js',
-		'./src/image/animations.js'
+		'./src/image/animations.js',
+		'./src/image/jpg.js'
 	],
 	admin: [
 		'./gulpfile.js'
