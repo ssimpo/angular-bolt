@@ -132,31 +132,36 @@ angular.module("bolt").factory("boltImageAnimations", [
 			});
 
 			$bolt.fill(1, options.steps).forEach(function(step) {
-				var middleImage = $image.cloneImageData(fromImage);
-				var factor = ((1 / options.steps) * step);
-				var compl = 1 - factor;
-
-				pixels.forEach(function(pixel) {
-					$image.setPixel(middleImage, {
-						r: pixel.to.r * factor + pixel.from.r * compl,
-						g: pixel.to.g * factor + pixel.from.g * compl,
-						b: pixel.to.b * factor + pixel.from.b * compl,
-						a: pixel.to.a * factor + pixel.from.a * compl,
-						x: pixel.to.x,
-						y: pixel.to.y,
-						left: left,
-						top: top
-					});
-				});
+				// Do a push to animations rather than a map to new array
+				// this is because animations might be reference to an array.
 
 				animations.push(function(){
+					var middleImage = $image.cloneImageData(fromImage);
+					var factor = ((1 / options.steps) * step);
+					var compl = 1 - factor;
+
+					pixels.forEach(function(pixel) {
+						$image.setPixel(middleImage, {
+							r: pixel.to.r * factor + pixel.from.r * compl,
+							g: pixel.to.g * factor + pixel.from.g * compl,
+							b: pixel.to.b * factor + pixel.from.b * compl,
+							a: pixel.to.a * factor + pixel.from.a * compl,
+							x: pixel.to.x,
+							y: pixel.to.y,
+							left: left,
+							top: top
+						});
+					});
+
 					options.canvas.putImageData(middleImage, 0, 0);
 					delete middleImage;
 				});
 			});
 
-			delete fromImage;
-			delete pixels;
+			animations.push(function() {
+				delete fromImage;
+				delete pixels;
+			});
 
 			return animations;
 		}
