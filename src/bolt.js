@@ -22,6 +22,9 @@ angular.module("bolt").factory("$bolt", [
 			$timeout(function(){
 				options.scope.$apply(function(){
 					controller[options.attributeName] = options.value;
+					if (options.callback) {
+						options.callback(options.value);
+					}
 				});
 			});
 		}

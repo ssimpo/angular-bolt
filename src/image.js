@@ -340,6 +340,8 @@ angular.module("bolt").factory("boltImage", [
 			getImageData: getImageData,
 			getBlock: getBlock,
 			getPixel: getPixel,
-			setPixel: setPixel
+			setPixel: setPixel,
+			getImageNode: loadImage,
+			calcPosition: calcPosition
 		};
 	}]);
