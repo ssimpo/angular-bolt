@@ -13,14 +13,33 @@ angular.module("bolt").factory("boltImage", [
 			// @todo	Deal with missing images - return undefined?
 
 			return loadImage2(src).then(function(data) {
-				var parser = new $jpg.JpegDecoder();
-				parser.parse(data);
-				var position = calcPosition(parser, width, height);
-				var iData = new ImageData(position.width, position.height);
-				iData.left = position.left;
-				iData.top = position.top;
-				return copyToImageData(parser, iData);
+				var iData = jpgDataToImageData(data, width, height);
+				return iData;
 			});
+		}
+
+		function jpgDataToImageData(jpgData, width, height) {
+			var parser = getJpgData(jpgData);
+			var position = calcPosition(parser, width, height);
+			var iData = getPositionedImageData(position);
+			iData = copyToImageData(parser, iData);
+			(parser.components || []).forEach(function(component) {
+				delete component.output;
+			});
+			return iData;
+		}
+
+		function getJpgData(data) {
+			var parser = new $jpg.JpegDecoder();
+			parser.parse(data);
+			return parser;
+		}
+
+		function getPositionedImageData(position) {
+			var iData = new ImageData(position.width, position.height);
+			iData.left = position.left;
+			iData.top = position.top;
+			return iData;
 		}
 
 		function cloneImageData(data) {
@@ -218,7 +237,9 @@ angular.module("bolt").factory("boltImage", [
 			return $http.get(src, {
 				responseType: "arraybuffer"
 			}).then(function(response) {
-				return new Uint8Array(response.data);
+				var data = new Uint8Array(response.data);
+				delete response.data;
+				return data;
 			});
 		}
 
@@ -231,15 +252,6 @@ angular.module("bolt").factory("boltImage", [
 		function loadImage(src) {
 			var imageNode = new Image();
 			imageNode.src = src;
-
-			loadImage2(src).then(function(data) {
-				console.log(data);
-				var parser = new $jpg.JpegDecoder();
-				parser.parse(data);
-				console.log(parser);
-			}, function(error) {
-				console.error(error);
-			});
 
 			return $q(function(resolve, reject) {
 				angular.element(imageNode).on("load", function() {
