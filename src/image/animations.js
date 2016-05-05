@@ -65,10 +65,11 @@ angular.module("bolt").factory("boltImageAnimations", [
 		}
 
 		function getArrayOfAllDataPoints(data) {
-			var points = [];
+			var points = new Array(data.width * data.height);
+			var count = 0;
 			for (var x = 0; x < data.width; x++) {
 				for (var y = 0; y < data.height; y++) {
-					points.push({x:x, y:y});
+					points[count++] = {x:x, y:y};
 				}
 			}
 

@@ -13,8 +13,7 @@ angular.module("bolt").factory("boltImage", [
 			// @todo	Deal with missing images - return undefined?
 
 			return loadImage2(src).then(function(data) {
-				var iData = jpgDataToImageData(data, width, height);
-				return iData;
+				return jpgDataToImageData(data, width, height);
 			});
 		}
 
