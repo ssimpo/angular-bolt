@@ -9,18 +9,20 @@ angular.module("bolt").factory("boltImage", [
 
 		var colourSequence = ["r", "g", "b", "a"];
 
-		function getImageData(src, width, height) {
+		function getImageData(src, width, height, useParser) {
 			// @todo	Deal with missing images - return undefined?
+
+			if (useParser) {
+				return loadImage2(src).then(function(data) {
+					return jpgDataToImageData(data, width, height);
+				});
+			}
 
 			return loadImage(src).then(function(node) {
 				var position = calcPosition(node, width, height);
 				var iData = getPixelData(node, position);
 				return iData;
 			});
-
-			/*return loadImage2(src).then(function(data) {
-				return jpgDataToImageData(data, width, height);
-			});*/
 		}
 
 		function jpgDataToImageData(jpgData, width, height) {
