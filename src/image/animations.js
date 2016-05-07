@@ -24,7 +24,10 @@ angular.module("bolt").factory("boltImageAnimations", [
 		}
 
 		function animate(data, options) {
-			var type = (options.animationType || "").toLowerCase();
+			var type = (options.animationType || "none").toLowerCase();
+			if ((type === "none") || !options.framerate || !options.steps) {
+				return createNoneAnimation(data, options);
+			}
 			if (type === "blocks") {
 				return createBlockAnimation(data, options);
 			}
@@ -117,6 +120,14 @@ angular.module("bolt").factory("boltImageAnimations", [
 				frameData = undefined;
 			});
 
+			return animations;
+		}
+
+		function createNoneAnimation(toImage, options) {
+			var animations = getFreshAnimationArray(options);
+			animations.push(function() {
+				options.canvas.putImageData(toImage, 0, 0);
+			});
 			return animations;
 		}
 
