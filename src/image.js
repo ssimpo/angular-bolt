@@ -265,6 +265,26 @@ angular.module("bolt").factory("boltImage", [
 			});
 		}
 
+		function draw(options) {
+			return loadImage(options.src).then(function(node) {
+				var position = calcPosition(node, options.width, options.height);
+
+				angular.element(options.canvas).attr({
+					width: position.width,
+					height: position.height
+				});
+
+				options.canvas.getContext("2d").drawImage(node,
+					0, 0, node.width, node.height,
+					0, 0, position.width, position.height
+				);
+
+				angular.element(node).remove();
+
+				return options.canvas;
+			});
+		}
+
 		function copyToImageData(parser, imageData) {
 			if (parser.numComponents === 2 || parser.numComponents > 4) {
 				throw new Error('Unsupported amount of components');
@@ -341,7 +361,6 @@ angular.module("bolt").factory("boltImage", [
 			getBlock: getBlock,
 			getPixel: getPixel,
 			setPixel: setPixel,
-			getImageNode: loadImage,
-			calcPosition: calcPosition
+			draw: draw
 		};
 	}]);
