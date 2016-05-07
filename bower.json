@@ -1,8 +1,8 @@
 {
   "name": "bolt",
   "version": "0.0.1",
-  "description": "Gallery style menu written in angular with json config.",
-  "homepage": "http://aaron.whitebolt/team-dev/angular-big-gallery",
+  "description": "Core bolt library files for angular",
+  "homepage": "http://aaron.whitebolt/bolt/angular-bolt",
   "main": "index.js",
   "author": "Whitebolt <hello@whitebolt.net>",
   "private": false,
@@ -18,7 +18,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@aaron.whitebolt:team-dev/angular-big-gallery.git"
+    "url": "git@aaron.whitebolt:bolt/angular-bolt.git"
   },
   "dependencies": {
     "foundation-sites": "^6.2.0",
@@ -28,7 +28,7 @@
   "ignore": [],
   "keywords": [
     "angular",
-    "gallary"
+    "bolt"
   ],
   "license": "SEE LICENSE IN LICENSE.md"
 }

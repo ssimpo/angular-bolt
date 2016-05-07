@@ -42,10 +42,7 @@ const watch = {
 		'./src/bolt.js',
 		'./src/ajax.js',
 		'./src/observer.js',
-		'./src/watcher.js',
-		'./src/image.js',
-		'./src/image/animations.js',
-		'./src/image/jpg.js'
+		'./src/watcher.js'
 	],
 	admin: [
 		'./gulpfile.js'
