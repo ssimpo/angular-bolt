@@ -125,6 +125,7 @@ angular.module("bolt").factory("boltImageAnimations", [
 			var fromImage = options.canvas.getImageData(0, 0, options.width, options.height);
 			var left = (toImage.left || 0);
 			var top = (toImage.top || 0);
+
 			var pixels = getArrayOfAllDataPoints(toImage).map(function(coords) {
 				return {
 					from: $image.getPixel(fromImage, coords.x + left, coords.y + top),

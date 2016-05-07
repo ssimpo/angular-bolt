@@ -355,23 +355,40 @@ angular.module("bolt").factory("boltImage", [
 			return canvasNode;
 		}
 
-		function calcPosition(image, width, height) {
-			width = width || image.width;
-			height = height || image.height;
+		function calcPosition(image, maxWidth, maxHeight) {
+			maxWidth = maxWidth || parseInt((image.width / image.height) * maxHeight, 10);
+			maxHeight = maxHeight || parseInt((image.height / image.width) * maxWidth, 10);
 
-			var aspect = width / height;
-			var imageAspect = image.width / image.height;
 			var position = {
-				height: height, width: width,
-				left: 0, top: 0
+				width: image.width,
+				height: image.height,
+				left: 0,
+				top: 0
 			};
 
-			if(imageAspect < aspect) {
-				position.width = parseInt(image.width * (position.height / image.height), 10);
-				position.left = parseInt((width - position.width) / 2, 10);
-			} else if(imageAspect > aspect) {
-				position.height = parseInt(image.height * (position.height / image.width), 10);
-				position.top = parseInt((height - position.height) / 2, 10);
+			var width = image.width;
+			var height = image.height;
+			var ratio;
+
+			if (width > maxWidth) {
+				ratio = maxWidth / width;
+				position.width = maxWidth;
+				position.height = parseInt(height * ratio, 10);
+				height = height * ratio;
+				width = width * ratio;
+			}
+
+			if (height > maxHeight) {
+				ratio = maxHeight / height;
+				position.height = maxHeight
+				position.width = parseInt(width * ratio, 10);
+			}
+
+			if (maxWidth > position.width) {
+				position.left = parseInt((maxWidth - position.width) / 2, 10);
+			}
+			if (maxHeight > position.height) {
+				position.top = parseInt((maxHeight - position.height) / 2, 10);
 			}
 
 			return position;
