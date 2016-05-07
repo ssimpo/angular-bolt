@@ -266,6 +266,29 @@ angular.module("bolt").factory("boltImage", [
 		}
 
 		function draw(options) {
+			return (
+				(options.useParser) ?
+					drawUsingParser(options) :
+					drawUsingImageNode(options)
+			);
+		}
+
+		function drawUsingParser(options) {
+			return loadImage2(options.src).then(function(data) {
+				return jpgDataToImageData(data, options.width, options.height);
+			}).then(function(iData) {
+				angular.element(options.canvas).attr({
+					width: iData.width,
+					height: iData.height
+				});
+				options.canvas.getContext("2d").putImageData(iData, 0, 0);
+
+				delete iData.data;
+				return options.canvas;
+			});
+		}
+
+		function drawUsingImageNode(options) {
 			return loadImage(options.src).then(function(node) {
 				var position = calcPosition(node, options.width, options.height);
 
@@ -280,7 +303,6 @@ angular.module("bolt").factory("boltImage", [
 				);
 
 				angular.element(node).remove();
-
 				return options.canvas;
 			});
 		}
