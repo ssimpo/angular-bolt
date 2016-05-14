@@ -5,6 +5,22 @@ angular.module("bolt").factory("$worker", [
 function(messenger, $q, $rootScope) {
 	"use strict";
 
+	var __sendStrings = __canSendJson();
+
+	function __canSendJson() {
+		var onlyStrings = false;
+
+		try {
+			window.postMessage({
+				toString: function(){
+					onlyStrings=true;
+				}
+			}, "*");
+		} catch(e){ }
+
+		return onlyStrings;
+	}
+
 	function getFunctionContent(func) {
 		var funcString = func.toString();
 		return funcString.slice(funcString.indexOf("{") + 1, funcString.lastIndexOf("}"));
@@ -31,6 +47,16 @@ function(messenger, $q, $rootScope) {
 			data = (angular.isString(data) ? JSON.parse(data) : data);
 			scope.$emit(type, data);
 		});
+
+		scope.$broadcast = function(type, data) {
+			var message = {
+				type: type,
+				data: data || {}
+			};
+
+			self.postMessage(__sendStrings ? JSON.stringify(message) : message);
+		};
+
 		return scope;
 	}
 
