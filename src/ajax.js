@@ -1,6 +1,7 @@
 angular.module("bolt").factory("boltAjax", [
 	"$http",
-function($http) {
+	"$window",
+function($http, $window) {
 	"use strict";
 
 	function get(options) {
@@ -13,13 +14,25 @@ function($http) {
 	}
 
 	function getWordpress(options, moreOptions) {
+		var post = getPostOptions(options, moreOptions);
 		return $http({
 			method: "post",
 			url: options.src,
-			data: getPostOptions(options, moreOptions),
+			data: post,
 			transformRequest: encodePostRequest
 		}).then(function (response) {
+			var root = options.root || moreOptions.root;
 			if (response && response.data) {
+				if (response.data.nonce && root && post.action) {
+					var nonce = root.attr('nonce');
+					if (nonce && $window[nonce]) {
+						nonce = $window[nonce];
+						if (nonce.nonce && nonce.nonce[post.action]) {
+							nonce.nonce[post.action] = response.data.nonce;
+						}
+					}
+				}
+
 				return response.data;
 			}
 			throw options.incorrectDataError || "Incorrect data returned";
@@ -32,7 +45,11 @@ function($http) {
 		});
 
 		if (config.nonce) {
-			post.nonce = config.nonce;
+			if (angular.isString(config.nonce.nonce)) {
+				post.nonce = config.nonce.nonce;
+			} else if (config.nonce.nonce[config.action]) {
+				post.nonce = config.nonce.nonce[config.action];
+			}
 		}
 
 		return post;
