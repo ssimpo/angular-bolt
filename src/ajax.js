@@ -12,11 +12,11 @@ function($http) {
 		});
 	}
 
-	function getWordpress(options) {
+	function getWordpress(options, moreOptions) {
 		return $http({
 			method: "post",
 			url: options.src,
-			data: getPostOptions(options),
+			data: getPostOptions(options, moreOptions),
 			transformRequest: encodePostRequest
 		}).then(function (response) {
 			if (response && response.data) {
@@ -26,10 +26,10 @@ function($http) {
 		});
 	}
 
-	function getPostOptions(config) {
-		var post = {
+	function getPostOptions(config, moreOptions) {
+		var post = Object.assign({}, moreOptions, {
 			action: config.action
-		};
+		});
 
 		if (config.nonce) {
 			post.nonce = config.nonce;
