@@ -6,17 +6,18 @@ function(messenger, $q, $rootScope) {
 	"use strict";
 
 	var __sendStrings = __canSendJson();
+	var scopes = {};
 
 	function __canSendJson() {
 		var onlyStrings = false;
 
 		try {
 			window.postMessage({
-				toString: function(){
-					onlyStrings=true;
+				toString: function() {
+					onlyStrings = true;
 				}
-			}, "*");
-		} catch(e){ }
+			},"*");
+		} catch(e) { }
 
 		return onlyStrings;
 	}
@@ -31,7 +32,7 @@ function(messenger, $q, $rootScope) {
 	}
 
 	function getFunctionContentUrl(func) {
-		var content = getFunctionContent(func) + getFunctionContent(messenger);
+		var content = getFunctionContent(messenger) + getFunctionContent(func);
 		return blobUrlForContent(content);
 	}
 
@@ -48,13 +49,13 @@ function(messenger, $q, $rootScope) {
 			scope.$emit(type, data);
 		});
 
-		scope.$broadcast = function(type, data) {
+		scope.$broadcast = function(type, data, transferable) {
 			var message = {
 				type: type,
 				data: data || {}
 			};
 
-			self.postMessage(__sendStrings ? JSON.stringify(message) : message);
+			worker.postMessage(__sendStrings ? JSON.stringify(message) : message, transferable);
 		};
 
 		return scope;
@@ -64,6 +65,8 @@ function(messenger, $q, $rootScope) {
 		return $q(function(resolve, reject) {
 			var unregister = scope.$on("ready", function() {
 				unregister();
+				//scopes[name] = scopes[name] || [];
+				//scopes[name].push(scope);
 				resolve(scope);
 			});
 		});

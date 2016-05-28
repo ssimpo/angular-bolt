@@ -18,15 +18,22 @@ angular.module("bolt").factory("$bolt", [
 		}
 
 		function apply(options){
-			var controller = options.controller || options.scope[options.scopeName];
-			$timeout(function(){
-				options.scope.$apply(function(){
-					controller[options.attributeName] = options.value;
-					if (options.callback) {
-						options.callback(options.value);
-					}
+			if (options.value.then) {
+				options.value.then(function(value) {
+					options.value = value;
+					apply(options);
 				});
-			});
+			} else {
+				var controller = options.controller || options.scope[options.scopeName];
+				$timeout(function(){
+					options.scope.$apply(function(){
+						controller[options.attributeName] = options.value;
+						if (options.callback) {
+							options.callback(options.value);
+						}
+					});
+				});
+			}
 		}
 
 		function fill(start, end) {
@@ -57,10 +64,15 @@ angular.module("bolt").factory("$bolt", [
 			return ary;
 		}
 
+		function forN(N) {
+			return Array.apply(null, {length: N}).map(Number.call, Number);
+		}
+
 		return {
 			"apply": apply,
 			"chunk": chunk,
 			"fill": fill,
+			"forN": forN,
 			"shallowCopy": shallowCopy,
 			"shuffle": shuffle
 		};

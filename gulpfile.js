@@ -43,8 +43,7 @@ const watch = {
 		'./src/ajax.js',
 		'./src/observer.js',
 		'./src/watcher.js',
-		'./src/worker.js',
-		'./src/worker/messenger.js'
+		'./src/worker.js'
 	],
 	admin: [
 		'./gulpfile.js'
