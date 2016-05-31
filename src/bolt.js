@@ -67,7 +67,38 @@ angular.module("bolt").factory("$bolt", [
 			return Array.apply(null, {length: N}).map(Number.call, Number);
 		}
 
+		function forOwn(obj, iterator) {
+			Object.keys(obj).forEach(key => iterator(obj[key], key));
+		}
+
+		function forOwnMap(obj, iterator) {
+			let mapped = {};
+			Object.keys(obj).forEach(key => {
+				Object.assign(mapped, iterator(obj[key], key));
+			});
+			return mapped;
+		}
+
+		function forOwnFilter(obj, iterator) {
+			let filtered = Object.assign({}, obj);
+			Object.keys(obj).forEach(key => {
+				if (!iterator(obj[key], key)) {
+					delete  filtered[key];
+				}
+			});
+			return filtered;
+		}
+
+		function forOwnMapArray(obj, iterator) {
+			return Object.keys(obj).map(key => iterator(obj[key], key));
+		}
+
+		function forOwnFilterArray(obj, iterator) {
+			return Object.values(forOwnFilter(obj, iterator))
+		}
+
 		return {
-			apply, chunk, fill, forN, shallowCopy, shuffle
+			apply, chunk, fill, forN, shallowCopy, shuffle, forOwn, forOwnMap,
+			forOwnMapArray, forOwnFilter, forOwnFilterArray
 		};
 	}]);
