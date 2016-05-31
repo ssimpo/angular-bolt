@@ -2,11 +2,11 @@ angular.module("bolt").factory("$worker.messenger", [function() {
 	"use strict";
 
 	return function() {
-		var __sendStrings = __canSendJson();
-		var __messageListeners = {};
+		const __sendStrings = __canSendJson();
+		const __messageListeners = {};
 
 		function __canSendJson() {
-			var onlyStrings = false;
+			let onlyStrings = false;
 
 			try {
 				self.postMessage({
@@ -19,12 +19,8 @@ angular.module("bolt").factory("$worker.messenger", [function() {
 			return onlyStrings;
 		}
 
-		function sendMessage(type, data, transferable) {
-			var message = {
-				type: type,
-				data: data || {}
-			};
-
+		function sendMessage(type, data = {}, transferable) {
+			let message = {type, data};
 			self.postMessage(__sendStrings ? JSON.stringify(message) : message, transferable);
 		}
 
@@ -36,9 +32,9 @@ angular.module("bolt").factory("$worker.messenger", [function() {
 		self.addEventListener('message', function(message) {
 			message.data = (__sendStrings ? JSON.parse(message.data) : message.data);
 			if (__messageListeners[message.data.type]) {
-				__messageListeners[message.data.type].forEach(function(callback) {
-					callback(message.data.data);
-				});
+				__messageListeners[message.data.type].forEach(callback =>
+					callback(message.data.data)
+				);
 			}
 		});
 

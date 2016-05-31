@@ -13,6 +13,7 @@ const rename = require("gulp-rename");
 const replace = require('gulp-replace');
 const sourcemaps = require('gulp-sourcemaps');
 const uglify = require('gulp-uglify');
+const babel = require("gulp-babel");
 
 
 function argumentsToArray(args){
@@ -53,13 +54,16 @@ const watch = {
 
 gulp.task('minify', () => {
 	gulp.src(watch.js)
+		.pipe(sourcemaps.init())
 		.pipe(replace(/(templateUrl: (?:"|')).*\/(.*?)("|')/g, '$1$2$3'))
 		.pipe(embedTemplates())
 		.pipe(concat(path.basename(watch.build)))
+		.pipe(sourcemaps.write('./'))
 		.pipe(gulp.dest(path.dirname(watch.build)))
 		.on('end', function () {
 			gulp.src(watch.build)
 				.pipe(sourcemaps.init())
+				.pipe(babel())
 				.pipe(uglify())
 				.pipe(rename(path.basename(watch.build).replace('.js','.min.js')))
 				.pipe(sourcemaps.write('./'))

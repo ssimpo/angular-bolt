@@ -3,12 +3,11 @@ angular.module("bolt").factory("$bolt", [
 	function($timeout) {
 		"use strict";
 
-		function shallowCopy(obj) {
-			var args = Array.prototype.slice.call(arguments);
+		function shallowCopy(...args) {
 			args.unshift({});
-			var copy = Object.assign.apply(Object, args);
+			const copy = Object.assign.apply(Object, args);
 
-			angular.forEach(copy, function(value, key) {
+			angular.forEach(copy, (value, key) => {
 				if (value === undefined) {
 					delete copy[key];
 				}
@@ -24,7 +23,8 @@ angular.module("bolt").factory("$bolt", [
 					apply(options);
 				});
 			} else {
-				var controller = options.controller || options.scope[options.scopeName];
+				const controller = options.controller || options.scope[options.scopeName];
+
 				$timeout(function(){
 					options.scope.$apply(function(){
 						controller[options.attributeName] = options.value;
@@ -36,22 +36,21 @@ angular.module("bolt").factory("$bolt", [
 			}
 		}
 
+		/**
+		 * @todo Does this work? .fill() being used!
+		 */
 		function fill(start, end) {
-			return Array(end - start + 1).fill().map(function(i, n) {
-				return start + n
-			});
+			return Array(end - start + 1).fill().map((i, n) => start + n);
 		}
 
 		function chunk(ary, chunkSize) {
-			return ary.map(function(item, index){
-				return index % chunkSize === 0 ? ary.slice(index, index + chunkSize) : null;
-			}).filter(function(item){
-				return item;
-			});
+			return ary.map((item, index) =>
+				index % chunkSize === 0 ? ary.slice(index, index + chunkSize) : null
+			).filter(item => item);
 		}
 
 		function shuffle(ary) {
-			var currentIndex = ary.length, temporaryValue, randomIndex;
+			let currentIndex = ary.length, temporaryValue, randomIndex;
 
 			while (0 !== currentIndex) {
 				randomIndex = Math.floor(Math.random() * currentIndex);
@@ -69,11 +68,6 @@ angular.module("bolt").factory("$bolt", [
 		}
 
 		return {
-			"apply": apply,
-			"chunk": chunk,
-			"fill": fill,
-			"forN": forN,
-			"shallowCopy": shallowCopy,
-			"shuffle": shuffle
+			apply, chunk, fill, forN, shallowCopy, shuffle
 		};
 	}]);

@@ -5,7 +5,7 @@ function($http, $window) {
 	"use strict";
 
 	function get(options) {
-		return $http.get(options.src, {}).then(function (response) {
+		return $http.get(options.src, {}).then(response => {
 			if (response && response.data) {
 				return response.data;
 			}
@@ -14,17 +14,18 @@ function($http, $window) {
 	}
 
 	function getWordpress(options, moreOptions) {
-		var post = getPostOptions(options, moreOptions);
+		const post = getPostOptions(options, moreOptions);
+
 		return $http({
 			method: "post",
 			url: options.src,
 			data: post,
 			transformRequest: encodePostRequest
-		}).then(function (response) {
-			var root = options.root || moreOptions.root;
+		}).then(response => {
+			let root = options.root || moreOptions.root;
 			if (response && response.data) {
 				if (response.data.nonce && root && post.action) {
-					var nonce = root.attr('nonce');
+					let nonce = root.attr('nonce');
 					if (nonce && $window[nonce]) {
 						nonce = $window[nonce];
 						if (nonce.nonce && nonce.nonce[post.action]) {
@@ -40,7 +41,7 @@ function($http, $window) {
 	}
 
 	function getPostOptions(config, moreOptions) {
-		var post = Object.assign({}, moreOptions, {
+		const post = Object.assign({}, moreOptions, {
 			action: config.action
 		});
 
@@ -56,12 +57,8 @@ function($http, $window) {
 	}
 
 	function encodePostRequest(obj) {
-		var str = [];
-
-		angular.forEach(obj, function(value, key) {
-			str.push(getEncodedPostPart(key, value));
-		});
-
+		const str = [];
+		angular.forEach(obj, (value, key) => str.push(getEncodedPostPart(key, value)));
 		return str.join("&");
 	}
 
@@ -71,7 +68,6 @@ function($http, $window) {
 	}
 
 	return {
-		"get": get,
-		"getWordpress": getWordpress
+		get, getWordpress
 	};
 }]);

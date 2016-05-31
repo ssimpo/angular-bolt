@@ -5,15 +5,15 @@ angular.module("bolt").factory("$worker", [
 function(messenger, $q, $rootScope) {
 	"use strict";
 
-	var __sendStrings = __canSendJson();
-	var scopes = {};
+	const __sendStrings = __canSendJson();
+	const scopes = {};
 
 	function __canSendJson() {
-		var onlyStrings = false;
+		let onlyStrings = false;
 
 		try {
 			window.postMessage({
-				toString: function() {
+				toString: () => {
 					onlyStrings = true;
 				}
 			},"*");
@@ -23,7 +23,7 @@ function(messenger, $q, $rootScope) {
 	}
 
 	function getFunctionContent(func) {
-		var funcString = func.toString();
+		const funcString = func.toString();
 		return funcString.slice(funcString.indexOf("{") + 1, funcString.lastIndexOf("}"));
 	}
 
@@ -32,29 +32,25 @@ function(messenger, $q, $rootScope) {
 	}
 
 	function getFunctionContentUrl(func) {
-		var content = getFunctionContent(messenger) + getFunctionContent(func);
-		return blobUrlForContent(content);
+		return blobUrlForContent(
+			getFunctionContent(messenger) + getFunctionContent(func)
+		);
 	}
 
 	function createWorkerScope(worker) {
-		var scope = $rootScope.$new(true);
-		return createMessageToScopeRelay(worker, scope);
+		return createMessageToScopeRelay(worker, rootScope.$new(true));
 	}
 
 	function createMessageToScopeRelay(worker, scope) {
-		angular.element(worker).on("message", function(message) {
-			var type = message.originalEvent.data.type;
-			var data = message.originalEvent.data.data;
+		angular.element(worker).on("message", message => {
+			const type = message.originalEvent.data.type;
+			let data = message.originalEvent.data.data;
 			data = (angular.isString(data) ? JSON.parse(data) : data);
 			scope.$emit(type, data);
 		});
 
-		scope.$broadcast = function(type, data, transferable) {
-			var message = {
-				type: type,
-				data: data || {}
-			};
-
+		scope.$broadcast = (type, data = {}, transferable) => {
+			const message = {type, data};
 			worker.postMessage(__sendStrings ? JSON.stringify(message) : message, transferable);
 		};
 
@@ -62,8 +58,8 @@ function(messenger, $q, $rootScope) {
 	}
 
 	function createWorkerPromise(scope) {
-		return $q(function(resolve, reject) {
-			var unregister = scope.$on("ready", function() {
+		return $q(resolve => {
+			let unregister = scope.$on("ready", function() {
 				unregister();
 				//scopes[name] = scopes[name] || [];
 				//scopes[name].push(scope);
