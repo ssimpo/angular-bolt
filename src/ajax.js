@@ -46,10 +46,14 @@ function($http, $window) {
 		});
 
 		if (config.nonce) {
-			if (angular.isString(config.nonce.nonce)) {
-				post.nonce = config.nonce.nonce;
-			} else if (config.nonce.nonce[config.action]) {
-				post.nonce = config.nonce.nonce[config.action];
+			if (config.nonce.nonce) {
+				if (angular.isString(config.nonce.nonce)) {
+					post.nonce = config.nonce.nonce;
+				} else if (config.nonce.nonce[config.action]) {
+					post.nonce = config.nonce.nonce[config.action];
+				}
+			} else {
+				post.nonce = config.nonce;
 			}
 		}
 
