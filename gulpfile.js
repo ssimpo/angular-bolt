@@ -3,7 +3,6 @@
 
 'use strict';
 
-const bowerData = require('./bower.json');
 const concat = require('gulp-concat');
 const embedTemplates = require('gulp-angular-embed-templates');
 const gulp = require('gulp');
@@ -49,7 +48,7 @@ const watch = {
 	admin: [
 		'./gulpfile.js'
 	],
-	build: bowerData.main
+	build: "./index.js"
 };
 
 gulp.task('minify', () => {
