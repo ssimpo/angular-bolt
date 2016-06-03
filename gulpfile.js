@@ -43,6 +43,7 @@ const watch = {
 		'./src/ajax.js',
 		'./src/observer.js',
 		'./src/watcher.js',
+		'./src/directive.js',
 		'./src/worker.js'
 	],
 	admin: [

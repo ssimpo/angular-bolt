@@ -5,6 +5,18 @@ angular.module("bolt").factory("$bolt", [
 function($timeout, $q) {
 	"use strict";
 
+	/**
+	 * @description
+	 * Given any value, ensure is an array. Arrays are just returned;
+	 * whilst, other objects are returned with themselves as the first
+	 * item in an array. Unde
+	 * @param value
+	 * @returns {*}
+	 */
+	function makeArray(value) {
+		return (angular.isArray(value) ? value : ((value !== undefined) ? [value] : []));
+	}
+
 	function shallowCopy(...args) {
 		args.unshift({});
 		const copy = Object.assign.apply(Object, args);
@@ -103,8 +115,20 @@ function($timeout, $q) {
 		return Object.values(forOwnFilter(obj, iterator))
 	}
 
+	/**
+	 * @description
+	 * Test if a value is a plain object (ie. an object but not an array
+	 * or null).
+	 *
+	 * @param {*} value 		Value to test.
+	 * @returns {boolean}		Result of test.
+	 */
+	function isObject(value) {
+		return (angular.isObject(value) && !angular.isArray(value));
+	}
+
 	return {
 		apply, chunk, fill, forN, shallowCopy, shuffle, forOwn, forOwnMap,
-		forOwnMapArray, forOwnFilter, forOwnFilterArray
+		forOwnMapArray, forOwnFilter, forOwnFilterArray, makeArray, isObject
 	};
 }]);

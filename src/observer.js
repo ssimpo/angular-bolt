@@ -32,13 +32,13 @@ function($bolt, $window) {
 	 * Observe an attribute value and trigger a callback when the
 	 * value changes.
 	 *
-	 * @param {Array} attributes			The directive attributes array.
+	 * @param {Array} attributes		The directive attributes array.
 	 * @param {string} attributeName 	The attribute name to observe.
 	 * @param {function} callback		Callback to fire.
 	 */
 	function observe(attributes, attributeName, callback) {
 		attributes.$observe(attributeName, (value, oldValue) => {
-			if(value !== oldValue){
+			if(value !== oldValue) {
 				callback(value, oldValue);
 			}
 		});
