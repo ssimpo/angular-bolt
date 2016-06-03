@@ -37,8 +37,11 @@ function($timeout, $q) {
 				apply(options);
 			});
 		} else {
+			if (options.scope && !options.controller) options.controller = get(options.scope);
+			if (!options.scope && options.controller && options.controller.parent) options.scope = options.controller.parent;
+
 			const controller = options.controller || options.scope[options.scopeName];
-			const scope = options.scope || controller.parent;
+			const scope = options.scope;
 
 			return $q(resolve => {
 				$timeout(function(){

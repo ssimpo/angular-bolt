@@ -2,7 +2,9 @@ angular.module("bolt").factory("boltDirective", [
 	"$bolt",
 	"boltObserver",
 	"boltWatcher",
-function($bolt, $observe, $watcher) {
+	"$q",
+
+function($bolt, $observe, $watcher, $q) {
 	"use strict";
 
 	const directives = new WeakMap();
@@ -47,7 +49,20 @@ function($bolt, $observe, $watcher) {
 		return ((controllers.length === 1) ? controllers[0] : controllers);
 	}
 
+	function set(ref, propName, propValue) {
+		return $q.all($bolt.makeArray(get(ref)).map(
+			controller => _set(controller, propName, propValue)
+		)).then(data => {
+			return ((data.length === 1) ? data[0] : data);
+		});
+	}
+
+	function _set(controller, attributeName, value) {
+		console.log(controller, attributeName, value);
+		return $bolt.apply({controller, attributeName, value});
+	}
+
 	return {
-		link, get, observeWatch
+		link, get, set, observeWatch
 	};
 }]);
