@@ -11,8 +11,16 @@ function($bolt, $observe, $watcher) {
 		controller.parent = scope;
 		controller.root = root;
 
-		if (!directives.has(root)) directives.set(root, []);
-		let controllers = directives.get(root);
+		let node = root;
+		if (node.length) node = node[0];
+
+		pushController(node, controller);
+		pushController(scope, controller);
+	}
+
+	function pushController(ref, controller) {
+		if (!directives.has(ref)) directives.set(ref, []);
+		let controllers = directives.get(ref);
 		controllers.push(controller);
 	}
 
@@ -25,14 +33,18 @@ function($bolt, $observe, $watcher) {
 	 * 								and $watchers.report().
 	 */
 	function observeWatch(options, watchTrigger) {
+		if (options.scope && !options.controller) options.controller = get(options.scope);
+		if (!options.scope && options.controller && options.controller.parent) options.scope = options.controller.parent;
+
 		$observe.reflect(options);
 		options.controller.reload = $watcher.report(
 			$bolt.shallowCopy(options, {callback: watchTrigger})
 		).trigger;
 	}
 
-	function get(root) {
-		return directives.get(root);
+	function get(ref) {
+		let controllers = directives.get(ref);
+		return ((controllers.length === 1) ? controllers[0] : controllers);
 	}
 
 	return {
