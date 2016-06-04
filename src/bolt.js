@@ -30,6 +30,14 @@ function($timeout, $q) {
 		return copy;
 	}
 
+	function copy(obj, keys) {
+		let copied = {};
+		(Array.isArray(keys)?keys:Object.keys(keys)).forEach(key => {
+			copied[key] = obj[key];
+		});
+		return copied;
+	}
+
 	function apply(options){
 		if (options.value.then) {
 			options.value.then(function(value) {
@@ -132,6 +140,7 @@ function($timeout, $q) {
 
 	return {
 		apply, chunk, fill, forN, shallowCopy, shuffle, forOwn, forOwnMap,
-		forOwnMapArray, forOwnFilter, forOwnFilterArray, makeArray, isObject
+		forOwnMapArray, forOwnFilter, forOwnFilterArray, makeArray, isObject,
+		copy
 	};
 }]);
