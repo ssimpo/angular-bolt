@@ -16,7 +16,7 @@ function() {
 			if (!previous.has(key)) {
 				changed.set(key, true);
 			} else {
-				if (previous[key] != value) changed.set(key, true);
+				if (angular.equals(previous[key], value)) changed.set(key, true);
 			}
 		});
 		return changed;
@@ -33,7 +33,7 @@ function() {
 		return Object.assign(
 			options.scope.$watch(currentWatcher, watchers => {
 				let changed = getWatcherChangeMap(watchers, previous);
-				watchers.hasChanged = (key) => changed.has(key);
+				watchers.hasChanged = key => changed.has(key);
 				controllers.set(controller, watchers);
 				trigger(watchers);
 			}, true),
