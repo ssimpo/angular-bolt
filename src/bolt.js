@@ -39,7 +39,7 @@ function($timeout, $q) {
 	}
 
 	function apply(options){
-		if (options.value.then) {
+		if (options.value && options.value.then) {
 			options.value.then(function(value) {
 				options.value = value;
 				apply(options);
@@ -52,9 +52,14 @@ function($timeout, $q) {
 			const scope = options.scope;
 
 			return $q(resolve => {
-				$timeout(function(){
-					scope.$apply(function(){
-						controller[options.attributeName] = options.value;
+				$timeout(() => {
+					scope.$apply(() => {
+						if (!options.attributeName && isObject(options.value)) {
+							Object.assign(controller, options.value);
+						} else {
+							controller[options.attributeName] = options.value;
+						}
+
 						resolve(options.value);
 						if (options.callback) {
 							options.callback(options.value);
