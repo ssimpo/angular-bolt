@@ -3,21 +3,133 @@ angular.module("bolt").factory("boltDirective", [
 	"boltObserver",
 	"boltWatcher",
 	"$q",
+	"$window",
 
-function($bolt, $observe, $watcher, $q) {
+function($bolt, $observe, $watcher, $q, $window) {
 	"use strict";
 
 	const directives = new WeakMap();
+	const jQueryMoveMethodMap = {
+		before: 'insertBefore',
+		after: 'insertAfter',
+		last: 'append',
+		first: 'prepend'
+	};
 
-	function link(scope, root, controller) {
-		controller.parent = scope;
-		controller.root = root;
+	function link(_config) {
+		const config = parseLinkConfig(_config);
 
-		let node = root;
-		if (node.length) node = node[0];
+		if (config.addParent) config.controller.parent = config.scope;
+		if (config.addRoot) config.controller.root = config.root;
 
-		pushController(node, controller);
-		pushController(scope, controller);
+		if (config.addLookups.node) {
+			let node = config.root;
+			if (node.length) node = node[0];
+			pushController(node, config.controller);
+		}
+
+		if (config.addLookups.scope) pushController(config.scope, config.controller);
+		if (config.moveDirective) moveDirective(config.root);
+	}
+
+	function parseLinkConfig(config) {
+		return Object.assign({
+			addParent: true,
+			addRoot: true,
+			addLookups: {
+				scope: true,
+				node: true
+			},
+			moveDirective: false
+		}, config);
+	}
+
+	function moveDirective(node) {
+		let placement = node.attr("placement") || "insert";
+
+		if (jQueryMoveMethodMap.hasOwnProperty(placement)) {
+			let position = node.attr("position") || "parent";
+			position = ((position === "parent") ? node.parent() : node.closest(position));
+			node[jQueryMoveMethodMap[placement]](position);
+		}
+	}
+
+	/**
+	 * @description
+	 * Setup a watch on a specific controller property.
+	 *
+	 * @private
+	 * @param {Object} controller				The controller instance.
+	 * @param {string|Array|function} propName	Controller propert(y|ies)
+	 * 											to watch or function to fire.
+	 * @param {function} callback				Callback to fire when
+	 * 											property changes.
+	 */
+	function report(controller, propName, callback) {
+		let scope = controller.parent;
+
+		if (Array.isArray(propName)) {
+			controller.parent.$watch(() => $bolt.copy(controller, propName), values => callback(values, controller), true);
+		} else if (angular.isFunction(propName)) {
+			scope.$watch(()=> propName(), value => callback(value, controller));
+		} else {
+			scope.$watch(()=> controller[propName], value => callback(value, controller));
+		}
+	}
+
+	function evalChain(controller, value) {
+		if ((value === undefined) || !angular.isString(value)) return value;
+		let _value = controller.parent.$eval(value) || controller.parent.$eval(value, $window) || value;
+		if (angular.isString(_value) && ((_value.indexOf("{") === 0) || (_value.indexOf("[") === 0))) {
+			try {_value = JSON.parse(_value);} catch (error) {}
+		}
+		return _value;
+	}
+
+	function getPrivateAttributeNames(attributeName) {
+		return (Array.isArray(attributeName) ?
+				attributeName.map(attributeName => '_' + attributeName) :
+			"_" + attributeName
+		);
+	}
+
+	function reportEvaluate(controller, attributeName, _callback, ...parsers) {
+		let callback = (!parsers.length ?
+			_callback :
+			(value, controller) => {
+				parsers.forEach(parser => {
+					value = parser(value, controller);
+				});
+				return _callback(value, controller)
+			}
+		);
+
+		if (angular.isFunction(attributeName)) {
+			controller.parent.$watch(
+				() => evalChain(controller, attributeName()),
+				value => $bolt.apply({controller, value, attributeName, callback}),
+				true
+			);
+		} else {
+			let _attributeName = getPrivateAttributeNames(attributeName);
+
+			if (Array.isArray(attributeName)) {
+				controller.parent.$watch(() => {
+					let value = {};
+					_attributeName.forEach(_attributeName => {
+						let attributeName = _attributeName.substring(1);
+						value[attributeName] = evalChain(controller, controller[_attributeName]);
+					});
+					return value;
+				}, value => $bolt.apply({controller, value, callback}), true);
+			} else {
+				controller.parent.$watch(
+					() => evalChain(controller, controller[_attributeName]),
+					value => $bolt.apply({controller, value, attributeName, callback}),
+					true
+				);
+			}
+		}
 	}
 
 	function pushController(ref, controller) {
@@ -63,6 +175,6 @@ function($bolt, $observe, $watcher, $q) {
 	}
 
 	return {
-		link, get, set, observeWatch
+		link, get, set, observeWatch, report, reportEvaluate
 	};
 }]);

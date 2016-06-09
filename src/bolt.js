@@ -62,7 +62,7 @@ function($timeout, $q) {
 
 						resolve(options.value);
 						if (options.callback) {
-							options.callback(options.value);
+							options.callback(options.value, options.controller);
 						}
 					});
 				});
