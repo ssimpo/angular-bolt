@@ -93,21 +93,11 @@ function($bolt, $observe, $watcher, $q, $window) {
 		);
 	}
 
-	function reportEvaluate(controller, attributeName, _callback, ...parsers) {
-		let callback = (!parsers.length ?
-			_callback :
-			(value, controller) => {
-				parsers.forEach(parser => {
-					value = parser(value, controller);
-				});
-				return _callback(value, controller)
-			}
-		);
-
+	function reportEvaluate(controller, attributeName, callback, ...parsers) {
 		if (angular.isFunction(attributeName)) {
 			controller.parent.$watch(
 				() => evalChain(controller, attributeName()),
-				value => $bolt.apply({controller, value, attributeName, callback}),
+				value => $bolt.apply({controller, value, attributeName, callback, parsers}),
 				true
 			);
 		} else {
@@ -121,11 +111,11 @@ function($bolt, $observe, $watcher, $q, $window) {
 						value[attributeName] = evalChain(controller, controller[_attributeName]);
 					});
 					return value;
-				}, value => $bolt.apply({controller, value, callback}), true);
+				}, value => $bolt.apply({controller, value, callback, parsers}), true);
 			} else {
 				controller.parent.$watch(
 					() => evalChain(controller, controller[_attributeName]),
-					value => $bolt.apply({controller, value, attributeName, callback}),
+					value => $bolt.apply({controller, value, attributeName, callback, parsers}),
 					true
 				);
 			}

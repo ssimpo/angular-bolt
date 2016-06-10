@@ -38,6 +38,13 @@ function($timeout, $q) {
 		return copied;
 	}
 
+	function runParsers(value, controller, parsers = []) {
+		parsers.forEach(parser => {
+			value = parser(value, controller);
+		});
+		return value;
+	}
+
 	function apply(options){
 		if (options.value && options.value.then) {
 			options.value.then(function(value) {
@@ -50,6 +57,10 @@ function($timeout, $q) {
 
 			const controller = options.controller || options.scope[options.scopeName];
 			const scope = options.scope;
+
+			if (options.parsers && options.parsers.length) {
+				options.value = runParsers(options.value, options.controller, options.parsers);
+			}
 
 			return $q(resolve => {
 				$timeout(() => {
