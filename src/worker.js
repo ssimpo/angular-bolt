@@ -1,8 +1,7 @@
 angular.module("bolt").factory("$worker", [
 	"$worker.messenger",
 	"$q",
-	"$rootScope",
-function(messenger, $q, $rootScope) {
+(messenger, $q) => {
 	"use strict";
 
 	const __sendStrings = __canSendJson();

@@ -1,7 +1,7 @@
 angular.module("bolt").factory("boltObserver", [
 	"$bolt",
 	"$window",
-function($bolt, $window) {
+($bolt, $window) => {
 	"use strict";
 
 	function reflect(options) {

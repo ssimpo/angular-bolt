@@ -4,8 +4,7 @@ angular.module("bolt").factory("boltDirective", [
 	"boltWatcher",
 	"$q",
 	"$window",
-
-function($bolt, $observe, $watcher, $q, $window) {
+($bolt, $observe, $watcher, $q, $window) => {
 	"use strict";
 
 	const directives = new WeakMap();

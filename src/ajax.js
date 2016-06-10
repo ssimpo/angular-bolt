@@ -1,7 +1,7 @@
 angular.module("bolt").factory("boltAjax", [
 	"$http",
 	"$window",
-function($http, $window) {
+($http, $window) => {
 	"use strict";
 
 	function get(options) {

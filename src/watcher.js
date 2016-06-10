@@ -1,6 +1,4 @@
-angular.module("bolt").factory("boltWatcher", [
-
-function() {
+angular.module("bolt").factory("boltWatcher", [() => {
 	"use strict";
 
 	const controllers = new WeakMap();

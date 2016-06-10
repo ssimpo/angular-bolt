@@ -1,8 +1,7 @@
 angular.module("bolt").factory("$bolt", [
 	"$timeout",
 	"$q",
-
-function($timeout, $q) {
+($timeout, $q) => {
 	"use strict";
 
 	/**
