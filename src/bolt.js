@@ -1,7 +1,8 @@
 angular.module("bolt").factory("$bolt", [
+	"objectPath",
 	"$timeout",
 	"$q",
-($timeout, $q) => {
+(objectPath, $timeout, $q) => {
 	"use strict";
 
 	/**
@@ -65,9 +66,12 @@ angular.module("bolt").factory("$bolt", [
 				$timeout(() => {
 					scope.$apply(() => {
 						if (!options.attributeName && isObject(options.value)) {
+							angular.forEach(options.value, (value, attributeName) => {
+								objectPath.set(controller, attributeName, value);
+							});
 							Object.assign(controller, options.value);
 						} else {
-							controller[options.attributeName] = options.value;
+							objectPath.set(controller, options.attributeName, options.value);
 						}
 
 						resolve(options.value);
