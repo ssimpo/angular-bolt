@@ -39,12 +39,14 @@ function arrayExtend(){
 const watch = {
 	js: [
 		'./src/index.js',
+		'./src/objectPath.js',
 		'./src/bolt.js',
 		'./src/ajax.js',
 		'./src/observer.js',
 		'./src/watcher.js',
 		'./src/directive.js',
-		'./src/worker.js'
+		'./src/worker.js',
+		'./src/animation.js'
 	],
 	admin: [
 		'./gulpfile.js'
