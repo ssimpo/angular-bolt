@@ -46,7 +46,17 @@ const watch = {
 		'./src/watcher.js',
 		'./src/directive.js',
 		'./src/worker.js',
-		'./src/animation.js'
+		'./src/animation.js',
+		'./src/animate/bounce.js',
+		'./src/animate/flash.js',
+		'./src/animate/headShake.js',
+		'./src/animate/jello.js',
+		'./src/animate/pulse.js',
+		'./src/animate/rubberBand.js',
+		'./src/animate/shake.js',
+		'./src/animate/tada.js',
+		'./src/animate/swing.js',
+		'./src/animate/wobble.js'
 	],
 	admin: [
 		'./gulpfile.js'
