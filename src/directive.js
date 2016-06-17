@@ -27,8 +27,36 @@ angular.module("bolt").factory("boltDirective", [
 			pushController(node, config.controller);
 		}
 
+		let destructors = [];
+		config.controller.destructor = destructor=>destructors.push(destructor);
+
 		if (config.addLookups.scope) pushController(config.scope, config.controller);
 		if (config.moveDirective) moveDirective(config.root);
+		let unreg = config.controller.parent.$on("$destroy", () => {
+			destructors.forEach(destructor => destructor());
+			config.controller.root.remove();
+			angular.forEach(config.controller, (value, key) => delete config.controller[key]);
+			angular.forEach(config, (value, key) => delete config[key]);
+			destructors = undefined;
+			unreg();
+		});
+	}
+
+	function getChildControllers(root) {
+		let scopes = [];
+		root.find("*").each((n, node) => {
+			if (has(node)) {
+				scopes.push(get(node));
+			}
+		});
+
+		return $bolt.flatten(scopes);
+	}
+
+	function destroyChildren(root) {
+		getChildControllers(root).forEach(controller => {
+			if (controller.parent && controller.parent.$destroy) controller.parent.$destroy();
+		});
 	}
 
 	function parseLinkConfig(config) {
@@ -145,6 +173,10 @@ angular.module("bolt").factory("boltDirective", [
 		).trigger;
 	}
 
+	function has(ref) {
+		return directives.has(ref);
+	}
+
 	function get(ref) {
 		let controllers = directives.get(ref);
 		return ((controllers.length === 1) ? controllers[0] : controllers);
@@ -164,6 +196,7 @@ angular.module("bolt").factory("boltDirective", [
 	}
 
 	return {
-		link, get, set, observeWatch, report, reportEvaluate
+		link, get, set, has, observeWatch, report, reportEvaluate,
+		getChildControllers, destroyChildren
 	};
 }]);
