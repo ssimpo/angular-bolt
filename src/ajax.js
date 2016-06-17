@@ -74,4 +74,8 @@ angular.module("bolt").factory("boltAjax", [
 	return {
 		get, getWordpress
 	};
+}]).config(["$locationProvider", ($locationProvider) => {
+	"use strict";
+
+	$locationProvider.html5Mode(true);
 }]);
