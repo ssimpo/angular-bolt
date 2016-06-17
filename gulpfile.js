@@ -46,6 +46,7 @@ const watch = {
 		'./src/watcher.js',
 		'./src/directive.js',
 		'./src/worker.js',
+		'./src/dynamicLoader/index.js',
 		'./src/animation.js',
 		'./src/animate/bounce.js',
 		'./src/animate/flash.js',

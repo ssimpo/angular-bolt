@@ -91,6 +91,10 @@ angular.module("bolt").factory("$bolt", [
 		return Array(end - start + 1).fill().map((i, n) => start + n);
 	}
 
+	function flatten(arr) {
+		return arr.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
+	}
+
 	function chunk(ary, chunkSize) {
 		return ary.map((item, index) =>
 			index % chunkSize === 0 ? ary.slice(index, index + chunkSize) : null
@@ -160,6 +164,6 @@ angular.module("bolt").factory("$bolt", [
 	return {
 		apply, chunk, fill, forN, shallowCopy, shuffle, forOwn, forOwnMap,
 		forOwnMapArray, forOwnFilter, forOwnFilterArray, makeArray, isObject,
-		copy
+		copy, flatten
 	};
 }]);
