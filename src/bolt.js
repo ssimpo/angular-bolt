@@ -63,22 +63,23 @@ angular.module("bolt").factory("$bolt", [
 			}
 
 			return $q(resolve => {
-				$timeout(() => {
-					scope.$apply(() => {
-						if (!options.attributeName && isObject(options.value)) {
-							angular.forEach(options.value, (value, attributeName) => {
-								objectPath.set(controller, attributeName, value);
-							});
-							Object.assign(controller, options.value);
-						} else {
-							objectPath.set(controller, options.attributeName, options.value);
-						}
+				scope.$applyAsync(() => {
+					if (!options.attributeName && isObject(options.value)) {
+						angular.forEach(options.value, (value, attributeName) => {
+							objectPath.set(controller, attributeName, value);
+						});
+						Object.assign(controller, options.value);
+					} else {
+						objectPath.set(controller, options.attributeName, options.value);
+					}
 
+					$timeout(()=>{
 						resolve(options.value);
 						if (options.callback) {
 							options.callback(options.value, options.controller);
 						}
-					});
+						return undefined;
+					}, 0, false);
 				});
 			});
 		}
