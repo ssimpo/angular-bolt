@@ -1,10 +1,8 @@
 angular.module("bolt").factory("boltDirective", [
 	"$bolt",
-	"boltObserver",
-	"boltWatcher",
 	"$q",
 	"$window",
-($bolt, $observe, $watcher, $q, $window) => {
+($bolt, $q, $window) => {
 	"use strict";
 
 	const directives = new WeakMap();
@@ -155,24 +153,6 @@ angular.module("bolt").factory("boltDirective", [
 		controllers.push(controller);
 	}
 
-	/**
-	 * Observe supplied attributes and reflect these to the controller
-	 * firing a watch function when they change.
-	 *
-	 * @private
-	 * @param {Object} options		Options to pass to $observe.reflect()
-	 * 								and $watchers.report().
-	 */
-	function observeWatch(options, watchTrigger) {
-		if (options.scope && !options.controller) options.controller = get(options.scope);
-		if (!options.scope && options.controller && options.controller.parent) options.scope = options.controller.parent;
-
-		$observe.reflect(options);
-		options.controller.reload = $watcher.report(
-			$bolt.shallowCopy(options, {callback: watchTrigger})
-		).trigger;
-	}
-
 	function has(ref) {
 		return directives.has(ref);
 	}
@@ -191,12 +171,11 @@ angular.module("bolt").factory("boltDirective", [
 	}
 
 	function _set(controller, attributeName, value) {
-		console.log(controller, attributeName, value);
 		return $bolt.apply({controller, attributeName, value});
 	}
 
 	return {
-		link, get, set, has, observeWatch, report, reportEvaluate,
+		link, get, set, has, report, reportEvaluate,
 		getChildControllers, destroyChildren
 	};
 }]);
