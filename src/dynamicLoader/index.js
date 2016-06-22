@@ -47,8 +47,7 @@ angular.module("bolt").directive("dynamicLoader", [
 		$compile(controller.root.contents())(controller.current);
 	}
 
-	function getController(ref) {
-		if (ref) return $directive.get(ref);
+	function dynamicLoadController() {
 		let controller = this;
 
 		Object.assign(controller, {
@@ -60,7 +59,7 @@ angular.module("bolt").directive("dynamicLoader", [
 		restrict: "A",
 		controllerAs,
 		scope: true,
-		controller: [getController],
+		controller: [dynamicLoadController],
 		bindToController: {
 			_src: "@dynamicLoader",
 			_nonce: "@?nonce",
