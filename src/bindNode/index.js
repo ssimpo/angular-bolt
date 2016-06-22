@@ -1,7 +1,6 @@
 angular.module("bolt").directive("bindNode", [
-	"boltDirective",
 	"objectPath",
-($directive, objectPath) => {
+(objectPath) => {
 	"use strict";
 
 	/**
@@ -16,7 +15,6 @@ angular.module("bolt").directive("bindNode", [
 	 * @param {Object} controller	The controller instance for this directive.
 	 */
 	function link(scope, root, attributes, controller={}) {
-		$directive.link({scope, root, controller});
 		let bindTo = attributes.bindNode.split(".");
 		let bindToController = scope.$eval(bindTo.shift());
 		let bindToControllerPath = bindTo.join(".");

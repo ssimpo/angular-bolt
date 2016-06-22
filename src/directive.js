@@ -32,12 +32,12 @@ angular.module("bolt").factory("boltDirective", [
 		if (config.addLookups.scope) pushController(config.scope, config.controller);
 		if (config.moveDirective) moveDirective(config.root);
 		let unreg = config.controller.parent.$on("$destroy", () => {
+			unreg();
 			destructors.forEach(destructor => destructor());
 			config.controller.root.remove();
 			angular.forEach(config.controller, (value, key) => delete config.controller[key]);
 			angular.forEach(config, (value, key) => delete config[key]);
 			destructors = undefined;
-			unreg();
 		});
 	}
 
@@ -95,11 +95,17 @@ angular.module("bolt").factory("boltDirective", [
 		let scope = controller.parent;
 
 		if (Array.isArray(propName)) {
-			controller.parent.$watch(() => $bolt.copy(controller, propName), values => callback(values, controller), true);
+			controller.destructor(
+				controller.parent.$watch(() => $bolt.copy(controller, propName), values => callback(values, controller), true)
+			);
 		} else if (angular.isFunction(propName)) {
-			scope.$watch(()=> propName(), value => callback(value, controller));
+			controller.destructor(
+				scope.$watch(()=> propName(), value => callback(value, controller))
+			);
 		} else {
-			scope.$watch(()=> controller[propName], value => callback(value, controller));
+			controller.destructor(
+				scope.$watch(()=> controller[propName], value => callback(value, controller))
+			);
 		}
 	}
 
@@ -121,29 +127,29 @@ angular.module("bolt").factory("boltDirective", [
 
 	function reportEvaluate(controller, attributeName, callback, ...parsers) {
 		if (angular.isFunction(attributeName)) {
-			controller.parent.$watch(
+			controller.destructor(controller.parent.$watch(
 				() => evalChain(controller, attributeName()),
 				value => $bolt.apply({controller, value, attributeName, callback, parsers}),
 				true
-			);
+			));
 		} else {
 			let _attributeName = getPrivateAttributeNames(attributeName);
 
 			if (Array.isArray(attributeName)) {
-				controller.parent.$watch(() => {
+				controller.destructor(controller.parent.$watch(() => {
 					let value = {};
 					_attributeName.forEach(_attributeName => {
 						let attributeName = _attributeName.substring(1);
 						value[attributeName] = evalChain(controller, controller[_attributeName]);
 					});
 					return value;
-				}, value => $bolt.apply({controller, value, callback, parsers}), true);
+				}, value => $bolt.apply({controller, value, callback, parsers}), true));
 			} else {
-				controller.parent.$watch(
+				controller.destructor(controller.parent.$watch(
 					() => evalChain(controller, controller[_attributeName]),
 					value => $bolt.apply({controller, value, attributeName, callback, parsers}),
 					true
-				);
+				));
 			}
 		}
 	}
