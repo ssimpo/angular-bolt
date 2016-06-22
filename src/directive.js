@@ -1,8 +1,9 @@
 angular.module("bolt").factory("boltDirective", [
 	"$bolt",
+	"objectPath",
 	"$q",
 	"$window",
-($bolt, $q, $window) => {
+($bolt, objectPath, $q, $window) => {
 	"use strict";
 
 	const directives = new WeakMap();
@@ -38,6 +39,14 @@ angular.module("bolt").factory("boltDirective", [
 			destructors = undefined;
 			unreg();
 		});
+	}
+
+	function bindNode(controller, controllerPath, nodePath) {
+		objectPath.set(
+			controller,
+			controllerPath,
+			angular.element(controller.root.find(nodePath)[0])
+		);
 	}
 
 	function getChildControllers(root) {
@@ -176,6 +185,6 @@ angular.module("bolt").factory("boltDirective", [
 
 	return {
 		link, get, set, has, report, reportEvaluate,
-		getChildControllers, destroyChildren
+		getChildControllers, destroyChildren, bindNode
 	};
 }]);
