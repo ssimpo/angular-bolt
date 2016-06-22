@@ -41,14 +41,6 @@ angular.module("bolt").factory("boltDirective", [
 		});
 	}
 
-	function bindNode(controller, controllerPath, nodePath) {
-		objectPath.set(
-			controller,
-			controllerPath,
-			angular.element(controller.root.find(nodePath)[0])
-		);
-	}
-
 	function getChildControllers(root) {
 		let scopes = [];
 		root.find("*").each((n, node) => {
@@ -185,6 +177,6 @@ angular.module("bolt").factory("boltDirective", [
 
 	return {
 		link, get, set, has, report, reportEvaluate,
-		getChildControllers, destroyChildren, bindNode
+		getChildControllers, destroyChildren
 	};
 }]);
