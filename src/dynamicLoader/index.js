@@ -49,6 +49,7 @@ angular.module("bolt").directive("dynamicLoader", [
 
 	function dynamicLoadController() {
 		let controller = this;
+		controller._name = "dynamicLoadController";
 
 		Object.assign(controller, {
 			first: true

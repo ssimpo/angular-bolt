@@ -166,7 +166,7 @@ angular.module("bolt").factory("boltDirective", [
 
 	function get(ref) {
 		let controllers = directives.get(ref);
-		return ((controllers.length === 1) ? controllers[0] : controllers);
+		return ((controllers && controllers.length && (controllers.length === 1)) ? controllers[0] : controllers);
 	}
 
 	function set(ref, propName, propValue) {
