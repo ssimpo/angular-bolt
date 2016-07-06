@@ -1,10 +1,11 @@
 angular.module("bolt").directive("dynamicLoader", [
+	"$document",
 	"$bolt",
 	"boltDirective",
 	"boltAjax",
 	"$location",
 	"$compile",
-($bolt, $directive, $ajax, $location, $compile) => {
+($doc, $bolt, $directive, $ajax, $location, $compile) => {
 	"use strict";
 
 	const controllerAs = "loader";
@@ -22,6 +23,9 @@ angular.module("bolt").directive("dynamicLoader", [
 	 */
 	function link(scope, root, attributes, controller) {
 		$directive.link({scope, root, controller});
+		let baseNode = $doc.find("head base");
+		if (baseNode.length) controller.baseNode = angular.element(baseNode[0]);
+		baseNode = undefined;
 		$directive.reportEvaluate(controller, ["src", "action", "nonce"]);
 		scope.$watch(()=>$location.path(), ()=>onSrcChange({}, controller));
 	}
@@ -30,8 +34,10 @@ angular.module("bolt").directive("dynamicLoader", [
 		if (controller.src && (controller.src !== "")) {
 			if (controller.first) {
 				const ajaxMethod = $ajax[controller.action ? "getWordpress" : "get"];
-				ajaxMethod(controller, {"path":$location.path()})
-					.then(data => applyPage(data, controller))
+				ajaxMethod(controller, {
+					"path":$location.path(),
+					"base":controller.baseNode?controller.baseNode.attr("href"):"/"
+				}).then(data => applyPage(data, controller))
 			} else {
 				controller.first = false;
 			}
