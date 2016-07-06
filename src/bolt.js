@@ -52,7 +52,6 @@ angular.module("bolt").factory("$bolt", [
 				apply(options);
 			});
 		} else {
-			if (options.scope && !options.controller) options.controller = get(options.scope);
 			if (!options.scope && options.controller && options.controller.parent) options.scope = options.controller.parent;
 
 			const controller = options.controller || options.scope[options.scopeName];
