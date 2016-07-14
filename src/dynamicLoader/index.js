@@ -30,7 +30,7 @@ angular.module("bolt").directive("dynamicLoader", [
 		scope.$watch(()=>$location.path(), ()=>onSrcChange({}, controller));
 	}
 
-	function onSrcChange(watched, controller = this) {
+	function onSrcChange(watched, controller=this) {
 		if (controller.src && (controller.src !== "")) {
 			if (controller.first) {
 				const ajaxMethod = $ajax[controller.action ? "getWordpress" : "get"];
