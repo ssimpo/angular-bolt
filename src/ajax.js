@@ -13,6 +13,15 @@ angular.module("bolt").factory("boltAjax", [
 		});
 	}
 
+	function post(options) {
+		return $http.post(options.src, options.data).then(response => {
+			if (response && response.data) {
+				return response.data;
+			}
+			throw options.incorrectDataError || "Incorrect data returned";
+		});
+	}
+
 	function getWordpress(options, moreOptions) {
 		const post = getPostOptions(options, moreOptions);
 
@@ -72,7 +81,7 @@ angular.module("bolt").factory("boltAjax", [
 	}
 
 	return {
-		get, getWordpress
+		get, getWordpress, post
 	};
 }]).config(["$locationProvider", ($locationProvider) => {
 	"use strict";
