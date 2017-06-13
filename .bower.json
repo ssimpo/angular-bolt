@@ -1,0 +1,12 @@
+{
+  "name": "angular-bolt",
+  "_release": "7b8e5bd43a",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "7b8e5bd43aeac5ade0277574a8e5befb26a91c71"
+  },
+  "_source": "git@aaron.whitebolt:angular/angular-bolt.git",
+  "_target": "*",
+  "_originalSource": "git@aaron.whitebolt:angular/angular-bolt.git"
+}

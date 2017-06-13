@@ -1,0 +1,72 @@
+{
+  "name": "bolt",
+  "version": "0.0.1",
+  "description": "Core bolt library files for angular",
+  "homepage": "http://aaron.whitebolt/bolt/angular-bolt",
+  "bugs": {
+    "url": "http://aaron.whitebolt/bolt/angular-bolt/issues"
+  },
+  "main": "src/index.js",
+  "author": "Whitebolt <hello@whitebolt.net>",
+  "private": false,
+  "contributors": [
+    {
+      "name": "Stephen Simpson",
+      "email": "stephen@whitebolt.net"
+    },
+    {
+      "name": "Kristjan Allikas",
+      "email": "kris@whitebolt.net"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@aaron.whitebolt:bolt/angular-bolt.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-preset-es2015": "*",
+    "gulp": "^3.9.0",
+    "gulp-angular-embed-templates": "^0.1.6",
+    "gulp-babel": "*",
+    "gulp-concat": "^2.6.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
+    "gulp-sass": "^2.1.0",
+    "gulp-sourcemaps": "*",
+    "gulp-uglify": "*",
+    "gulp-webserver": "^0.9.1",
+    "jshint": "^2.9.1"
+  },
+  "babel": {
+    "presets": ["es2015"]
+  },
+  "files": [],
+  "keywords": [
+    "angular",
+    "bolt"
+  ],
+  "srcRoots": [
+    "./src/index.js",
+    "./src/objectPath.js",
+    "./src/bolt.js",
+    "./src/ajax.js",
+    "./src/directive.js",
+    "./src/dynamicLoader/index.js",
+    "./src/bindNode/index.js",
+    "./src/animation.js",
+    "./src/animate/index.js",
+    "./src/animate/bounce.js",
+    "./src/animate/flash.js",
+    "./src/animate/headShake.js",
+    "./src/animate/jello.js",
+    "./src/animate/pulse.js",
+    "./src/animate/rubberBand.js",
+    "./src/animate/shake.js",
+    "./src/animate/tada.js",
+    "./src/animate/swing.js",
+    "./src/animate/wobble.js"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md"
+}
