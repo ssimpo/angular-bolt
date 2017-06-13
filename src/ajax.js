@@ -4,7 +4,7 @@ angular.module("bolt").factory("boltAjax", [
 ($http, $window) => {
 	"use strict";
 
-	function get(options, data) {
+	function get(options) {
 		return $http.get(options.src, {}).then(response => {
 			if (response && response.data) {
 				return response.data;
@@ -14,7 +14,7 @@ angular.module("bolt").factory("boltAjax", [
 	}
 
 	function post(options) {
-		return $http.post(options.src, options.data || {}).then(response => {
+		return $http.post(options.src, options.data || {}).then(response=>{
 			if (response && response.data) {
 				return response.data;
 			}
