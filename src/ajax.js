@@ -1,8 +1,20 @@
 angular.module("bolt").factory("boltAjax", [
+	"$bolt",
 	"$http",
 	"$window",
-($http, $window) => {
+($bolt, $http, $window) => {
 	"use strict";
+
+	let socketCallbacks = new Map();
+
+	if ($window.socket) {
+		$window.socket.on("post", response=>{
+			if (socketCallbacks.has(response.body.messageId)) {
+				socketCallbacks.get(response.body.messageId)(response);
+				socketCallbacks.delete(response.body.messageId);
+			}
+		});
+	}
 
 	function get(options) {
 		return $http.get(options.src, {}).then(response => {
@@ -14,12 +26,27 @@ angular.module("bolt").factory("boltAjax", [
 	}
 
 	function post(options) {
-		return $http.post(options.src, options.data || {}).then(response=>{
-			if (response && response.data) {
-				return response.data;
-			}
-			throw options.incorrectDataError || "Incorrect data returned";
-		});
+		if ($window.socketConnected) {
+			let messageId = $bolt.randomString();
+			$window.socket.emit("post", {
+				path: options.src,
+				body: options.data || {},
+				messageId
+			});
+
+			return new Promise((resolve, reject)=>{
+				socketCallbacks.set(messageId, response=>{
+					resolve(response.body);
+				});
+			});
+		} else {
+			return $http.post(options.src, options.data || {}).then(response=>{
+				if (response && response.data) {
+					return response.data;
+				}
+				throw options.incorrectDataError || "Incorrect data returned";
+			});
+		}
 	}
 
 	function getWordpress(options, moreOptions) {
