@@ -26,6 +26,7 @@ angular.module("bolt").directive("dynamicLoader", [
 		let baseNode = $doc.find("head base");
 		if (baseNode.length) controller.baseNode = angular.element(baseNode[0]);
 		baseNode = undefined;
+
 		$directive.reportEvaluate(controller, ["src", "action", "nonce"]);
 		scope.$watch(()=>$location.path(), ()=>onSrcChange({}, controller));
 	}
@@ -53,8 +54,13 @@ angular.module("bolt").directive("dynamicLoader", [
 		if (controller.current) controller.current.$destroy();
 		$directive.destroyChildren(controller.root);
 		controller.root.empty();
-		controller.root.html(page);
+		controller.root.html(page.content || page);
 		controller.current = controller.parent.$new();
+
+		if (controller.parent.app && controller.id && (controller.id.toString().trim() !== "")) {
+			controller.parent.app[controller.id.toString().trim()] = page;
+		}
+
 		$compile(controller.root.contents())(controller.current);
 	}
 
@@ -75,7 +81,8 @@ angular.module("bolt").directive("dynamicLoader", [
 		bindToController: {
 			_src: "@dynamicLoader",
 			_nonce: "@?nonce",
-			_action: "@?action"
+			_action: "@?action",
+			id: "@"
 		},
 		link
 	};
