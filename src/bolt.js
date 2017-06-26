@@ -185,9 +185,17 @@ angular.module("bolt").factory("$bolt", [
 		return str;
 	}
 
+	function pick(obj, ary) {
+		let _obj = {};
+		makeArray(ary).forEach(prop=>{
+			_obj[prop] = obj[prop];
+		});
+		return _obj;
+	}
+
 	return {
 		apply, chunk, fill, forN, shallowCopy, shuffle, forOwn, forOwnMap,
 		forOwnMapArray, forOwnFilter, forOwnFilterArray, makeArray, isObject,
-		copy, flatten, randomString
+		copy, flatten, randomString, pick
 	};
 }]);

@@ -5,17 +5,6 @@ angular.module("bolt").factory("boltAjax", [
 ($bolt, $http, $window) => {
 	"use strict";
 
-	let socketCallbacks = new Map();
-
-	if ($window.socket) {
-		$window.socket.on("post", response=>{
-			if (socketCallbacks.has(response.body.messageId)) {
-				socketCallbacks.get(response.body.messageId)(response);
-				socketCallbacks.delete(response.body.messageId);
-			}
-		});
-	}
-
 	function get(options) {
 		return $http.get(options.src, {}).then(response => {
 			if (response && response.data) {
@@ -27,15 +16,12 @@ angular.module("bolt").factory("boltAjax", [
 
 	function post(options) {
 		if ($window.socketConnected) {
-			let messageId = $bolt.randomString();
-			$window.socket.emit("post", {
-				path: options.src,
-				body: options.data || {},
-				messageId
-			});
-
 			return new Promise((resolve, reject)=>{
-				socketCallbacks.set(messageId, response=>{
+				$window.socket.emit("post", {
+					path: options.src,
+					body: options.data || {},
+					messageId:  $bolt.randomString()
+				}, response=>{
 					resolve(response.body);
 				});
 			});
