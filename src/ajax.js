@@ -5,6 +5,8 @@ angular.module("bolt").factory("boltAjax", [
 ($bolt, $http, $window) => {
 	"use strict";
 
+	let timeout = 20;
+
 	function get(options) {
 		return $http.get(options.src, {}).then(response => {
 			if (response && response.data) {
@@ -17,12 +19,27 @@ angular.module("bolt").factory("boltAjax", [
 	function post(options) {
 		if ($window.socketConnected) {
 			return new Promise((resolve, reject)=>{
+				let timeoutRef = setTimeout(()=>{
+					clearTimeout(timeoutRef);
+					console.log("TIMEOUT");
+					reject({
+						type: 'application/json',
+						status: 0,
+						path: options.src,
+						body: "Timeout"
+					});
+				}, 1000*timeout);
+
 				$window.socket.emit("post", {
 					path: options.src,
 					body: options.data || {},
 					messageId:  $bolt.randomString()
 				}, response=>{
-					resolve(response.body);
+					if (timeoutRef) {
+						clearTimeout(timeoutRef);
+						if ((response.status && (response.status < 400))) return resolve(response.body);
+						reject(response);
+					}
 				});
 			});
 		} else {
@@ -94,6 +111,6 @@ angular.module("bolt").factory("boltAjax", [
 	}
 
 	return {
-		get, getWordpress, post
+		get, getWordpress, post, timeout
 	};
 }]);
