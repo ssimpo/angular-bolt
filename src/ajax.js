@@ -17,12 +17,10 @@ angular.module("bolt").factory("boltAjax", [
 	}
 
 	function post(options) {
-		console.log("post");
 		if ($window.socketConnected) {
 			return new Promise((resolve, reject)=>{
 				let timeoutRef = setTimeout(()=>{
 					clearTimeout(timeoutRef);
-					console.log("TIMEOUT");
 					reject({
 						type: 'application/json',
 						status: 0,
@@ -54,7 +52,6 @@ angular.module("bolt").factory("boltAjax", [
 	}
 
 	function getWordpressApi(options, moreOptions) {
-		console.log("getWordpressApi");
 		const get = getPostOptions(options, moreOptions);
 
 		return $http({
@@ -76,7 +73,6 @@ angular.module("bolt").factory("boltAjax", [
 	}
 
 	function getWordpress(options, moreOptions) {
-		console.log("getWordpress");
 		const post = getPostOptions(options, moreOptions);
 
 		return $http({
