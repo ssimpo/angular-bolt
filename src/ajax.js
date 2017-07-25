@@ -1,8 +1,11 @@
 angular.module("bolt").factory("boltAjax", [
+	"$bolt",
 	"$http",
 	"$window",
-($http, $window) => {
+($bolt, $http, $window) => {
 	"use strict";
+
+	let timeout = 20;
 
 	function get(options) {
 		return $http.get(options.src, {}).then(response => {
@@ -14,15 +17,66 @@ angular.module("bolt").factory("boltAjax", [
 	}
 
 	function post(options) {
-		return $http.post(options.src, options.data).then(response => {
-			if (response && response.data) {
-				return response.data;
+		console.log("post");
+		if ($window.socketConnected) {
+			return new Promise((resolve, reject)=>{
+				let timeoutRef = setTimeout(()=>{
+					clearTimeout(timeoutRef);
+					console.log("TIMEOUT");
+					reject({
+						type: 'application/json',
+						status: 0,
+						path: options.src,
+						body: "Timeout"
+					});
+				}, 1000*timeout);
+
+				$window.socket.emit("post", {
+					path: options.src,
+					body: options.data || {},
+					messageId:  $bolt.randomString()
+				}, response=>{
+					if (timeoutRef) {
+						clearTimeout(timeoutRef);
+						if ((response.status && (response.status < 400))) return resolve(response.body);
+						reject(response);
+					}
+				});
+			});
+		} else {
+			return $http.post(options.src, options.data || {}).then(response=>{
+				if (response && response.data) {
+					return response.data;
+				}
+				throw options.incorrectDataError || "Incorrect data returned";
+			});
+		}
+	}
+
+	function getWordpressApi(options, moreOptions) {
+		console.log("getWordpressApi");
+		const get = getPostOptions(options, moreOptions);
+
+		return $http({
+			method: "get",
+			url: "/",
+			params: {
+				"rest_route": "/wp/v2/pages",
+				"slug": options.src
 			}
+		}).then(response=>{
+			if (response && response.data && response.data.length) {
+				return {
+					content: response.data[0].content.rendered
+				};
+			}
+
 			throw options.incorrectDataError || "Incorrect data returned";
 		});
 	}
 
 	function getWordpress(options, moreOptions) {
+		console.log("getWordpress");
 		const post = getPostOptions(options, moreOptions);
 
 		return $http({
@@ -81,10 +135,6 @@ angular.module("bolt").factory("boltAjax", [
 	}
 
 	return {
-		get, getWordpress, post
+		get, getWordpress, post, timeout, getWordpressApi
 	};
-}]).config(["$locationProvider", ($locationProvider) => {
-	"use strict";
-
-	$locationProvider.html5Mode(true);
 }]);
