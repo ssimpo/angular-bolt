@@ -54,6 +54,7 @@
     "./src/ajax.js",
     "./src/directive.js",
     "./src/dynamicLoader/index.js",
+    "./src/wordpressLoader/index.js",
     "./src/bindNode/index.js",
     "./src/animation.js",
     "./src/animate/index.js",

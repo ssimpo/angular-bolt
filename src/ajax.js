@@ -51,23 +51,15 @@ angular.module("bolt").factory("boltAjax", [
 		}
 	}
 
-	function getWordpressApi(options, moreOptions) {
-		const get = getPostOptions(options, moreOptions);
+	function getWordpressPage(options) {
+		let url = angular.element("[rel='https://api.w.org/']").attr("href") + "wp/v2/pages";
+		let slug = options.src;
 
-		return $http({
-			method: "get",
-			url: "/",
-			params: {
-				"rest_route": "/wp/v2/pages",
-				"slug": options.src
-			}
-		}).then(response=>{
-			if (response && response.data && response.data.length) {
-				return {
-					content: response.data[0].content.rendered
-				};
-			}
-
+		return $http({method: "get", url, params: {slug}}).then(res=>{
+			if (res && res.data && res.data.length) return {
+				content: res.data[0].content.rendered
+			};
+			console.error(res.data);
 			throw options.incorrectDataError || "Incorrect data returned";
 		});
 	}
@@ -131,6 +123,6 @@ angular.module("bolt").factory("boltAjax", [
 	}
 
 	return {
-		get, getWordpress, post, timeout, getWordpressApi
+		get, getWordpress, post, timeout, getWordpressPage
 	};
 }]);
