@@ -57,6 +57,7 @@ angular.module("bolt").factory("boltAjax", [
 
 		return $http({method: "get", url, params: {slug}}).then(res=>{
 			if (res && res.data && res.data.length) return {
+				title: res.data[0].title.rendered,
 				content: res.data[0].content.rendered
 			};
 			console.error(res.data);

@@ -26,10 +26,8 @@ angular.module("bolt").directive("wordpressLoader", [
 		let baseNode = $doc.find("head base");
 		if (baseNode.length) controller.baseNode = angular.element(baseNode[0]);
 		baseNode = undefined;
-
 		controller.path = $location.path();
 		scope.$watch(()=>$location.path(), value=>{
-			console.log(value, controller.path);
 			if (controller.path !== value) {
 				controller.path = value;
 				onSrcChange(controller)
@@ -38,24 +36,35 @@ angular.module("bolt").directive("wordpressLoader", [
 	}
 
 	function onSrcChange(controller=this) {
-		console.log("HELLO");
 		$ajax.getWordpressPage({src: controller.path}).then(
 			data=>applyPage(data, controller)
 		);
 	}
 
+	function applyNodes(nodeMap, page, controller) {
+		Object.keys(nodeMap).forEach(nodeRef=>{
+			let node = controller.parent.app[nodeRef];
+			if (node) {
+				$directive.destroyChildren(node);
+				node.empty();
+				node.html(page[nodeMap[nodeRef]] || "");
+				$compile(node.contents())(controller.current);
+			}
+		})
+	}
+
 	function applyPage(page, controller) {
 		if (controller.current) controller.current.$destroy();
-		$directive.destroyChildren(controller.root);
-		controller.root.empty();
-		controller.root.html(page.content || page);
 		controller.current = controller.parent.$new();
-
-		if (controller.parent.app && controller.id && (controller.id.toString().trim() !== "")) {
-			controller.parent.app[controller.id.toString().trim()] = page;
+		applyNodes({
+			pageHeading: "title",
+			articleContent: "content"
+		}, page, controller);
+		if (controller.path === "/") {
+			angular.element("body").addClass("home");
+		} else {
+			angular.element("body").removeClass("home");
 		}
-
-		$compile(controller.root.contents())(controller.current);
 	}
 
 	function wordpressLoadController() {
