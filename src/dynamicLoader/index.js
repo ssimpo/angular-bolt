@@ -5,7 +5,8 @@ angular.module("bolt").directive("dynamicLoader", [
 	"boltAjax",
 	"$location",
 	"$compile",
-($doc, $bolt, $directive, $ajax, $location, $compile) => {
+	"$rootScope",
+($doc, $bolt, $directive, $ajax, $location, $compile, $rootScope) => {
 	"use strict";
 
 	const controllerAs = "loader";
@@ -28,21 +29,29 @@ angular.module("bolt").directive("dynamicLoader", [
 		baseNode = undefined;
 
 		$directive.reportEvaluate(controller, ["src", "action", "nonce"]);
-		scope.$watch(()=>$location.path(), ()=>onSrcChange({}, controller));
+		//scope.$watch(()=>$location.path(), ()=>onSrcChange({}, controller));
+
+		$rootScope.$on(
+			"$locationChangeStart",
+			(evt, newUrl, oldUrl, newState, oldState)=>onSrcChange(controller, evt, newUrl, oldUrl, newState, oldState)
+		);
 	}
 
-	function onSrcChange(watched, controller=this) {
-		if (controller.src && (controller.src !== "")) {
+	function onSrcChange(controller, evt, newUrl, oldUrl, newState, oldState) {
+		if (newUrl !== oldUrl) {
 			if (controller.first) {
 				const ajaxMethod = $ajax[controller.action ? "getWordpress" : ((controller.src === "wordpressApi") ? "getWordpressApi" : "post")];
 
+				const pathBase = newUrl.replace($location.url(), '');
+				const base = (controller.baseNode?controller.baseNode.attr("href"):"/");
+				const path = "/" + newUrl.replace(pathBase, '').replace(base, '');
+
+				console.log(base, pathBase, path, newUrl);
+
 				if (!controller.action) {
-					ajaxMethod({src: $location.path()}).then(data=>applyPage(data, controller));
+					ajaxMethod({src: path}).then(data=>applyPage(data, controller));
 				} else {
-					ajaxMethod(controller, {
-						"path":$location.path(),
-						"base":controller.baseNode?controller.baseNode.attr("href"):"/"
-					}).then(data=>applyPage(data, controller));
+					ajaxMethod(controller, {path, base}).then(data=>applyPage(data, controller));
 				}
 			} else {
 				controller.first = false;
