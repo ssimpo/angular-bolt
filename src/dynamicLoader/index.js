@@ -29,7 +29,6 @@ angular.module("bolt").directive("dynamicLoader", [
 		baseNode = undefined;
 
 		$directive.reportEvaluate(controller, ["src", "action", "nonce"]);
-		//scope.$watch(()=>$location.path(), ()=>onSrcChange({}, controller));
 
 		$rootScope.$on(
 			"$locationChangeStart",
@@ -45,8 +44,6 @@ angular.module("bolt").directive("dynamicLoader", [
 				const pathBase = newUrl.replace($location.url(), '');
 				const base = (controller.baseNode?controller.baseNode.attr("href"):"/");
 				const path = "/" + newUrl.replace(pathBase, '').replace(base, '');
-
-				console.log(base, pathBase, path, newUrl);
 
 				if (!controller.action) {
 					ajaxMethod({src: path}).then(data=>applyPage(data, controller));
